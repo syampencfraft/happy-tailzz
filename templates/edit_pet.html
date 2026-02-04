@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit {{ pet.name }}'s Profile | Happy Tailz{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0" style="border-radius: 20px;">
+                <div class="card-header bg-primary text-white p-4" style="border-radius: 20px 20px 0 0;">
+                    <h3 class="fw-bold mb-0 text-center"><i class="fas fa-edit me-2"></i> Edit Pet Profile</h3>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="row g-4">
+                            <!-- Current Photo Preview -->
+                            <div class="col-12 text-center mb-4">
+                                <div class="position-relative d-inline-block">
+                                    <img src="{{ pet.pet_image.url }}" alt="{{ pet.name }}" class="rounded-4 shadow"
+                                        style="width: 150px; height: 150px; object-fit: cover; border: 4px solid var(--primary-color);">
+                                    <div class="mt-3">
+                                        <label class="form-label fw-bold">Update Photo</label>
+                                        <input class="form-control" type="file" name="pet_image">
+                                        <small class="text-muted">Leave empty to keep the current photo.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Basic Info Section -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Pet Name</label>
+                                <input class="form-control" type="text" name="name" value="{{ pet.name }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Pet Type</label>
+                                <select class="form-select" name="pet_type" required>
+                                    <option value="dog" {% if pet.pet_type == 'dog' %}selected{% endif %}>Dog</option>
+                                    <option value="cat" {% if pet.pet_type == 'cat' %}selected{% endif %}>Cat</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Breed</label>
+                                <input class="form-control" type="text" name="breed" value="{{ pet.breed }}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Gender</label>
+                                <select class="form-select" name="gender" required>
+                                    <option value="male" {% if pet.gender == 'male' %}selected{% endif %}>Male</option>
+                                    <option value="female" {% if pet.gender == 'female' %}selected{% endif %}>Female
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Physical Tags Section -->
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Color</label>
+                                <input class="form-control" type="text" name="color" value="{{ pet.color }}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Weight (kg)</label>
+                                <input class="form-control" type="number" step="0.1" name="weight"
+                                    value="{{ pet.weight }}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Date of Birth</label>
+                                <input class="form-control" type="date" name="dob" value="{{ pet.dob|date:'Y-m-d' }}"
+                                    required>
+                            </div>
+
+                            <!-- Detailed Info Section -->
+                            <div class="col-12">
+                                <label class="form-label fw-bold">About {{ pet.name }}</label>
+                                <textarea class="form-control" name="about_me" rows="4"
+                                    required>{{ pet.about_me }}</textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Location</label>
+                                <input class="form-control" type="text" name="location" value="{{ pet.location }}"
+                                    required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Google Map Link</label>
+                                <input class="form-control" type="url" name="google_map_link"
+                                    value="{{ pet.google_map_link|default:'' }}">
+                            </div>
+
+                            <!-- Sale Options -->
+                            <div class="col-12">
+                                <div class="p-4 rounded-4 border bg-light">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="is_for_sale"
+                                            name="is_for_sale" {% if pet.is_for_sale %}checked{% endif %}
+                                            onchange="togglePrice(this)">
+                                        <label class="form-check-label fw-bold" for="is_for_sale">Available for
+                                            Sale?</label>
+                                    </div>
+                                    <div id="price_container"
+                                        style="display: {% if pet.is_for_sale %}block{% else %}none{% endif %};">
+                                        <label class="form-label fw-bold">Asking Price ($)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" step="0.01" class="form-control" name="price"
+                                                value="{{ pet.price|default:'' }}" placeholder="0.00">
+                                        </div>
+                                        <small class="text-muted">Update the price or disable sale status.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                function togglePrice(checkbox) {
+                                    const container = document.getElementById('price_container');
+                                    container.style.display = checkbox.checked ? 'block' : 'none';
+                                }
+                            </script>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Update Certification (optional)</label>
+                                <input class="form-control" type="file" name="certification">
+                                {% if pet.certification %}
+                                <small class="text-success mt-1 d-block"><i class="fas fa-check-circle"></i> Current
+                                    certificate: <a href="{{ pet.certification.url }}" target="_blank">View
+                                        File</a></small>
+                                {% endif %}
+                                <small class="text-muted">Upload a new file to replace the existing one.</small>
+                            </div>
+
+                            <div class="col-12 mt-5">
+                                <div class="d-flex gap-3">
+                                    <button type="submit" class="btn btn-primary btn-lg flex-grow-1 rounded-pill">Save
+                                        Changes</button>
+                                    <a href="{% url 'pet_profile' pet.id %}"
+                                        class="btn btn-outline-secondary btn-lg px-5 rounded-pill">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

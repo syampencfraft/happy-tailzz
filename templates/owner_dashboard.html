@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 mb-4"
+                style="border-radius: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body p-5">
+                    <h2 class="display-5 fw-bold mb-2">Owner Dashboard</h2>
+                    <p class="lead mb-4">Manage your pets, track health records, and discover more about your furry
+                        friends.</p>
+                    <a href="{% url 'add_pet' %}" class="btn btn-light btn-lg px-4"
+                        style="border-radius: 30px; font-weight: 600; color: #764ba2;">
+                        + Add Pet Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- My Pets Section (Full Width) -->
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 h-100" style="border-radius: 15px; background-color: #f8f9fa;">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h4 class="fw-bold"><i class="fas fa-paw"></i> My Pets</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if pets %}
+                    <div class="list-group list-group-flush" style="border-radius: 12px; overflow: hidden;">
+                        {% for pet in pets %}
+                        <div class="list-group-item list-group-item-action d-flex align-items-center p-3 border-0 mb-2 shadow-sm"
+                            style="border-radius: 12px; background: white;">
+                            <img src="{{ pet.pet_image.url }}" alt="{{ pet.name }}" class="rounded-circle me-3"
+                                style="width: 50px; height: 50px; object-fit: cover; border: 2px solid var(--primary-color);">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0 fw-bold">{{ pet.name }}</h6>
+                                <small class="text-muted text-capitalize">{{ pet.breed }} ({{ pet.pet_type }})</small>
+                            </div>
+                            <a href="{% url 'pet_profile' pet.id %}"
+                                class="btn btn-outline-primary btn-sm rounded-pill px-3">Profile</a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <div class="mb-3" style="font-size: 3rem; color: #dee2e6;">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <h5 class="fw-bold text-muted">No pets added yet</h5>
+                        <a href="{% url 'add_pet' %}" class="btn btn-primary btn-sm mt-3">Add Your First Pet</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

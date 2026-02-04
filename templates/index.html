@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Happy Tailz | Your Pet's Second Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section"
+    style="background-image: url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?q=80&w=2000&auto=format&fit=crop');">
+    <div class="hero-overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 hero-content">
+                <h1 class="display-3">Your Pet's Happy Place Starts Here.</h1>
+                <p class="lead mb-4">Discover professional pet care services tailored to your furry friend's needs. From
+                    grooming to expert veterinary care, we've got it all.</p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 shadow">Get Started</a>
+                    <a href="#" class="btn btn-outline-light btn-lg px-4">Our Services</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid -->
+<section class="py-5 bg-white">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <span class="text-primary fw-bold text-uppercase tracking-widest">Our Expertise</span>
+            <h2 class="display-5 fw-bold mt-2">Professional Pet Care Services</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">We offer a wide range of services to ensure your pet
+                stays healthy, happy, and well-groomed.</p>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <!-- Service 1 -->
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-scissors"></i>
+                    </div>
+                    <h4>Pet Grooming</h4>
+                    <p class="text-muted">Premium baths, hair clipping, and nail trimming to keep your pet looking their
+                        absolute best.</p>
+                    <a href="#" class="text-primary fw-bold text-decoration-none">Learn More <i
+                            class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+            <!-- Service 2 -->
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <h4>Vet Consultation</h4>
+                    <p class="text-muted">Expert veterinary care and routine checkups from licensed professionals who
+                        love animals.</p>
+                    <a href="#" class="text-primary fw-bold text-decoration-none">Learn More <i
+                            class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+            <!-- Service 3 -->
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h4>Pet Training</h4>
+                    <p class="text-muted">Help your pet learn new skills and behaviors with our positive, reward-based
+                        training programs.</p>
+                    <a href="#" class="text-primary fw-bold text-decoration-none">Learn More <i
+                            class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5" style="background: #fdfcfb;">
+    <div class="container py-5">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?q=80&w=1000&auto=format&fit=crop"
+                        class="img-fluid rounded-4 shadow-lg" alt="Happy Pet">
+                    <div class="bg-primary text-white p-4 rounded-4 shadow-lg position-absolute top-100 start-0 translate-middle-y ms-5 d-none d-md-block"
+                        style="width: 250px;">
+                        <h4 class="fw-bold mb-1">10k+</h4>
+                        <p class="small mb-0">Happy pets cared for in the last year.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h2 class="display-5 fw-bold mb-4">Why Happy Tailz?</h2>
+                <p class="text-muted mb-5">We are dedicated to providing the highest quality pet care. Our team consists
+                    of passionate animal lovers and certified professionals.</p>
+
+                <div class="d-flex mb-4">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-primary fa-2x"></i>
+                    </div>
+                    <div class="ms-4">
+                        <h5 class="fw-bold">Certified Professionals</h5>
+                        <p class="text-muted">Every member of our team is fully vetted and certified in their respective
+                            fields.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex mb-4">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-heart text-primary fa-2x"></i>
+                    </div>
+                    <div class="ms-4">
+                        <h5 class="fw-bold">Compassionate Care</h5>
+                        <p class="text-muted">We treat every pet with the same love and attention we give our own furry
+                            friends.</p>
+                    </div>
+                </div>
+
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-shield-alt text-primary fa-2x"></i>
+                    </div>
+                    <div class="ms-4">
+                        <h5 class="fw-bold">Safe & Secure</h5>
+                        <p class="text-muted">Our facilities are designed with your pet's safety and comfort as the top
+                            priority.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white text-center">
+    <div class="container py-5">
+        <h2 class="display-6 fw-bold mb-4">Ready to give your pet the best care?</h2>
+        <p class="lead mb-5 opacity-75">Join our community of happy pet owners today.</p>
+        <a href="{% url 'register' %}"
+            class="btn btn-light btn-lg px-5 py-3 rounded-pill fw-bold text-primary shadow">Join Happy Tailz Now</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Discover Pets | Happy Tailz{% endblock %}
+
+{% block content %}
+<section class="py-5" style="background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%); min-height: 80vh;">
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold mb-3">Meet Our Community</h1>
+            <p class="lead text-muted mx-auto" style="max-width: 700px;">Explore and connect with amazing pets from our
+                growing family of happy tails.</p>
+        </div>
+
+        <div class="row g-4 mt-2">
+            {% if pets %}
+            {% for pet in pets %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card h-100 shadow-sm border-0"
+                    style="border-radius: 20px; overflow: hidden; transition: transform 0.3s ease;">
+                    <a href="{% url 'pet_profile' pet.id %}" class="text-decoration-none">
+                        <div class="position-relative">
+                            <img src="{{ pet.pet_image.url }}" class="card-img-top" alt="{{ pet.name }}"
+                                style="height: 250px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2 align-items-end">
+                                <span class="badge bg-white text-dark shadow-sm px-3 py-2 rounded-pill">
+                                    <i class="fas fa-paw text-primary me-1"></i> {{ pet.pet_type|title }}
+                                </span>
+                                {% if pet.is_for_sale %}
+                                <span class="badge bg-success text-white shadow-sm px-3 py-2 rounded-pill">
+                                    <i class="fas fa-tag me-1"></i> ${{ pet.price }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h4 class="fw-bold mb-0">{{ pet.name }}</h4>
+                            <div class="text-muted small">
+                                <i class="fas fa-eye me-1"></i> {{ pet.views_count }}
+                            </div>
+                        </div>
+                        <p class="text-muted mb-3"><i class="fas fa-fingerprint me-1"></i> {{ pet.breed }}</p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-heart text-danger me-2"></i>
+                                <span class="fw-bold">{{ pet.likes.count }}</span>
+                            </div>
+                            <a href="{% url 'pet_profile' pet.id %}"
+                                class="btn btn-outline-primary rounded-pill px-4">View Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="mb-4" style="font-size: 4rem; color: #dee2e6;">
+                    <i class="fas fa-dog"></i>
+                </div>
+                <h3>No pets have joined yet.</h3>
+                <p class="text-muted">Be the first to add your pet to our community!</p>
+                <a href="{% url 'add_pet' %}" class="btn btn-primary btn-lg mt-3 rounded-pill">Add Your Pet</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+{% endblock %}
