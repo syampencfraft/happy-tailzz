@@ -9,6 +9,9 @@ import os
 from django.conf import settings
 from .ml_utils import predict_pet_breed
 from django.core.files.storage import default_storage
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+import re
 
 
 # Create your views here.
@@ -26,17 +29,49 @@ def register(request):
     if request.method == 'POST':
         data = request.POST
 
-        if User.objects.filter(email=data['email']).exists():
-            messages.error(request, "Email already registered")
+        email = data['email']
+        password = data['password']
+        confirm_password = data.get('confirm_password')
+        phone = data['phone']
+
+        # --- Server-Side Validations ---
+        
+        # 1. Check if passwords match
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match")
+            return redirect('register')
+
+        # 2. Validate Email Format
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Invalid email format")
+            return redirect('register')
+
+        # 3. Validate Phone Number (10 digits)
+        if not re.fullmatch(r'\d{10}', phone):
+            messages.error(request, "Phone number must be exactly 10 digits")
+            return redirect('register')
+
+        # 4. Password Complexity
+        # At least 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special char
+        password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+        if not re.fullmatch(password_regex, password):
+            messages.error(request, "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character")
+            return redirect('register')
+
+        # 5. Check if email already exists for this role
+        if User.objects.filter(email=email, role=data['role']).exists():
+            messages.error(request, "Account with this email and role already exists")
             return redirect('register')
 
         user = User(
             full_name=data['full_name'],
-            email=data['email'],
-            phone=data['phone'],
+            email=email,
+            phone=phone,
             address=data['address'],
             role=data['role'],
-            password=make_password(data['password']),
+            password=make_password(password),
             profile_image=request.FILES['profile_image']
         )
 
@@ -63,9 +98,11 @@ def login(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
+        role = request.POST['role']
 
         try:
-            user = User.objects.get(email=email)
+            # Check for user with specific email AND role
+            user = User.objects.get(email=email, role=role)
 
             if not user.is_approved:
                 messages.error(request, "Account not approved by admin")
@@ -81,7 +118,7 @@ def login(request):
             messages.error(request, "Invalid password")
 
         except User.DoesNotExist:
-            messages.error(request, "Invalid email")
+            messages.error(request, "No account found with this email and role")
 
     return render(request, 'login.html')
 def role_required(role):
@@ -96,7 +133,17 @@ def role_required(role):
 
 @role_required('admin')
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+    role_filter = request.GET.get('role')
+    
+    if role_filter:
+        users = User.objects.filter(role=role_filter).order_by('-created_at')
+    else:
+        users = User.objects.all().exclude(role='admin').order_by('-created_at')
+
+    return render(request, 'admin_dashboard.html', {
+        'users': users,
+        'current_role': role_filter
+    })
 
 
 @role_required('owner')
@@ -241,10 +288,10 @@ def predict_breed(request):
         image_url = default_storage.url(file_name)
 
         all_predictions = predict_pet_breed(full_path)
-        top_prediction = all_predictions[0] if all_predictions else None
+        # top_prediction = all_predictions[0] if all_predictions else None   <-- Removed causing KeyError on dict
 
         return render(request, 'breed_prediction.html', {
-            'prediction': top_prediction,
+            'prediction': all_predictions,  # Pass the list (success) or dict (error) directly
             'uploaded_image_url': image_url,
         })
 

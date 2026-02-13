@@ -1,13 +1,57 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h3>Login</h3>
-<form method="post">
-    {% csrf_token %}
-    <input class="form-control mb-2" type="email" name="email" placeholder="Email" required>
-    <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
-    <button class="btn btn-success">Login</button>
-    <a href="{% url 'register' %}" class="btn btn-link">Register</a>
-</form>
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <h3>Welcome Back</h3>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <input class="form-control" type="email" name="email" placeholder="Email Address" required>
+            </div>
+            <div class="mb-3">
+                <select class="form-control" name="role" required>
+                    <option value="" disabled selected>Select Your Role</option>
+                    <option value="owner">Pet Owner</option>
+                    <option value="vet">Veterinarian</option>
+                    <option value="caretaker">Pet Caretaker</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <input class="form-control" type="password" name="password" id="password" placeholder="Password"
+                        required>
+                    <button class="btn btn-outline-light bg-white text-dark" type="button"
+                        onclick="togglePassword('password', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="btn btn-primary">Login to Account</button>
+            <div class="text-center mt-3">
+                <span style="color: rgba(255,255,255,0.7);">Don't have an account?</span>
+                <a href="{% url 'register' %}" class="btn-link">Register here</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
 
 {% endblock %}

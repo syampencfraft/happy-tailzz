@@ -14,9 +14,12 @@ class User(models.Model):
     )
 
     full_name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
+    email = models.EmailField()  # Removed unique=True
     phone = models.CharField(max_length=15)
     address = models.TextField()
+    
+    class Meta:
+        unique_together = ('email', 'role')
 
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
 

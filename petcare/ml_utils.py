@@ -21,17 +21,25 @@ def predict_pet_breed(img_path):
         # Make prediction
         preds = model.predict(img_array)
         
+        # Check if the top prediction is a cat or dog
+        # ImageNet indices: 
+        # 151-268: Dogs
+        # 281-285: Cats
+        top_index = np.argmax(preds)
+        
+        is_dog = 151 <= top_index <= 268
+        is_cat = 281 <= top_index <= 285
+        
+        if not (is_dog or is_cat):
+            return {'error': 'Invalid Image: No cat or dog detected. Please upload a clear image of a pet.'}
+
         # Decode the results into a list of tuples (class, description, probability)
         decoded_preds = decode_predictions(preds, top=3)[0]
 
-        # Filter for cat and dog breeds from ImageNet classes
-        # ImageNet has many dog and cat breeds.
+        # Get the top valid result
         results = []
         for _, label, score in decoded_preds:
-            # ImageNet labels often have multiple names separated by commas (e.g., 'Entlebucher, Entlebucher_Sennenhund')
-            # We take only the first one
             primary_name = label.split(',')[0]
-            # Format the label (replace underscores with spaces and capitalize)
             breed_name = primary_name.replace('_', ' ').title()
             
             results.append({

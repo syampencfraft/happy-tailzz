@@ -1,51 +1,202 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h3>User Registration</h3>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
+<div class="auth-wrapper">
+    <div class="auth-container" style="max-width: 700px;">
+        <h3>Create Account</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-    <input class="form-control mb-2" type="text" name="full_name" placeholder="Full Name" required>
-    <input class="form-control mb-2" type="email" name="email" placeholder="Email" required>
-    <input class="form-control mb-2" type="text" name="phone" placeholder="Phone" required>
-    <textarea class="form-control mb-2" name="address" placeholder="Address" required></textarea>
+            <div class="row">
+                <div class="col-md-6">
+                    <input class="form-control" type="text" name="full_name" placeholder="Full Name" required>
+                </div>
+                <div class="col-md-6">
+                    <input class="form-control" type="text" name="phone" placeholder="Phone Number" required>
+                </div>
+            </div>
 
-    <select class="form-control mb-2" name="role" id="role" required>
-        <option value="">Select Role</option>
-        <option value="owner">Owner</option>
-        <option value="seller">Adoption & Seller</option>
-        <option value="vet">Veterinarian</option>
-        <option value="caretaker">Pet Caretaker</option>
-        <option value="groomer">Pet Groomer</option>
-    </select>
+            <input class="form-control" type="email" name="email" placeholder="Email Address" required>
+            <textarea class="form-control" name="address" placeholder="Full Address" rows="2" required></textarea>
 
-    <!-- Vet Fields -->
-    <div id="vet_fields" style="display:none;">
-        <input class="form-control mb-2" type="text" name="qualification" placeholder="Qualification">
-        <input class="form-control mb-2" type="text" name="registration_number" placeholder="Registration Number">
+            <select class="form-control" name="role" id="role" required>
+                <option value="" disabled selected>Select Your Role</option>
+                <option value="owner">Pet Owner</option>
+                <option value="vet">Veterinarian</option>
+                <option value="caretaker">Pet Caretaker</option>
+            </select>
+
+            <!-- Vet Fields -->
+            <div id="vet_fields" style="display:none; animation: fadeInUp 0.5s;">
+                <input class="form-control" type="text" name="qualification" placeholder="Qualification">
+                <input class="form-control" type="text" name="registration_number" placeholder="Registration Number">
+            </div>
+
+            <!-- Caretaker Fields -->
+            <div id="service_fields" style="display:none; animation: fadeInUp 0.5s;">
+                <input class="form-control" type="number" name="experience" placeholder="Experience (years)">
+                <textarea class="form-control" name="services_offered" placeholder="Services Offered"
+                    rows="2"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="text-white small mb-1">Profile Image</label>
+                <input class="form-control" type="file" name="profile_image" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input class="form-control" type="password" name="password" id="password" placeholder="Password"
+                            required>
+                        <button class="btn btn-outline-light bg-white text-dark" type="button"
+                            onclick="togglePassword('password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input class="form-control" type="password" name="confirm_password" id="confirm_password"
+                            placeholder="Confirm Password" required>
+                        <button class="btn btn-outline-light bg-white text-dark" type="button"
+                            onclick="togglePassword('confirm_password', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="password-error" class="text-danger small mb-2" style="display:none;"></div>
+
+            <button class="btn btn-primary mt-2" type="submit" id="submitBtn">Create Account</button>
+            <div class="text-center mt-3">
+                <span style="color: rgba(255,255,255,0.7);">Already have an account?</span>
+                <a href="{% url 'login' %}" class="btn-link">Login here</a>
+            </div>
+        </form>
     </div>
-
-    <!-- Caretaker / Groomer -->
-    <div id="service_fields" style="display:none;">
-        <input class="form-control mb-2" type="number" name="experience" placeholder="Experience (years)">
-        <textarea class="form-control mb-2" name="services_offered" placeholder="Services Offered"></textarea>
-    </div>
-
-    <input class="form-control mb-2" type="file" name="profile_image" required>
-    <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
-
-    <button class="btn btn-primary">Register</button>
-    <a href="{% url 'login' %}" class="btn btn-link">Login</a>
-</form>
+</div>
 
 <script>
-document.getElementById('role').addEventListener('change', function () {
-    document.getElementById('vet_fields').style.display =
-        this.value === 'vet' ? 'block' : 'none';
+    // Role selection logic
+    document.getElementById('role').addEventListener('change', function () {
+        document.getElementById('vet_fields').style.display =
+            this.value === 'vet' ? 'block' : 'none';
 
-    document.getElementById('service_fields').style.display =
-        (this.value === 'caretaker' || this.value === 'groomer') ? 'block' : 'none';
-});
+        document.getElementById('service_fields').style.display =
+            (this.value === 'caretaker') ? 'block' : 'none';
+
+        // Reset animations
+        if (this.value === 'vet') document.getElementById('vet_fields').style.animation = 'fadeInUp 0.5s';
+        if (this.value === 'caretaker') document.getElementById('service_fields').style.animation = 'fadeInUp 0.5s';
+    });
+
+    // Form Validation logic
+    document.querySelector('form').addEventListener('submit', function (e) {
+        let valid = true;
+        let errors = [];
+
+        const phone = document.querySelector('input[name="phone"]').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const errorDiv = document.getElementById('password-error');
+
+        // Phone Validation
+        if (!/^\d{10}$/.test(phone)) {
+            errors.push("Phone number must be exactly 10 digits.");
+            valid = false;
+        }
+
+        // Password Match Validation
+        if (password !== confirmPassword) {
+            errors.push("Passwords do not match.");
+            valid = false;
+        }
+
+        // Password Complexity Validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            errors.push("Password must be 8+ chars, include Uppercase, Lowercase, Number & Special Char.");
+            valid = false;
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            errorDiv.innerHTML = errors.join('<br>');
+            errorDiv.style.display = 'block';
+
+            // Add shake animation to container for visual feedback
+            const container = document.querySelector('.auth-container');
+            container.style.animation = 'none';
+            container.offsetHeight; /* trigger reflow */
+            container.style.animation = 'shake 0.5s';
+        } else {
+            errorDiv.style.display = 'none';
+        }
+    });
+
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
 </script>
+
+<style>
+    @keyframes shake {
+        0% {
+            transform: translate(1px, 1px) rotate(0deg);
+        }
+
+        10% {
+            transform: translate(-1px, -2px) rotate(-1deg);
+        }
+
+        20% {
+            transform: translate(-3px, 0px) rotate(1deg);
+        }
+
+        30% {
+            transform: translate(3px, 2px) rotate(0deg);
+        }
+
+        40% {
+            transform: translate(1px, -1px) rotate(1deg);
+        }
+
+        50% {
+            transform: translate(-1px, 2px) rotate(-1deg);
+        }
+
+        60% {
+            transform: translate(-3px, 1px) rotate(0deg);
+        }
+
+        70% {
+            transform: translate(3px, 1px) rotate(-1deg);
+        }
+
+        80% {
+            transform: translate(-1px, -1px) rotate(1deg);
+        }
+
+        90% {
+            transform: translate(1px, 2px) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(1px, -2px) rotate(-1deg);
+        }
+    }
+</style>
 
 {% endblock %}
