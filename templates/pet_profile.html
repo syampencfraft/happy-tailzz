@@ -160,8 +160,10 @@
                             <i class="fas fa-calendar-check text-muted mb-2 d-block fa-2x"></i>
                             <span class="text-muted">No upcoming appointments scheduled.</span>
                             <div class="mt-3">
-                                <a href="#" class="btn btn-outline-primary btn-sm rounded-pill">Book Grooming</a>
-                                <a href="#" class="btn btn-outline-primary btn-sm rounded-pill ms-2">Consult Vet</a>
+                                <a href="{% url 'list_caretakers' %}"
+                                    class="btn btn-outline-primary btn-sm rounded-pill">Book Caretaker</a>
+                                <a href="{% url 'list_vets' %}"
+                                    class="btn btn-outline-primary btn-sm rounded-pill ms-2">Consult Vet</a>
                             </div>
                         </div>
                     </div>

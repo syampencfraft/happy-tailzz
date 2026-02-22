@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold" style="color: #fd7e14;"><i class="fas fa-hand-holding-heart me-2"></i>Our Pet
+            Caretakers</h2>
+        <p class="text-muted mx-auto" style="max-width: 600px;">Find passionate and experienced caretakers to look after
+            your beloved pets when you can't be there.</p>
+    </div>
+
+    <div class="row g-4">
+        {% for caretaker in caretakers %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm border-0" style="border-radius: 20px; overflow: hidden;">
+                <!-- Card Header with Image -->
+                <div class="bg-warning bg-opacity-10 text-center pt-4 pb-2">
+                    {% if caretaker.profile_image %}
+                    <img src="{{ caretaker.profile_image.url }}" class="rounded-circle mb-3 shadow-sm"
+                        style="width: 120px; height: 120px; object-fit: cover; border: 4px solid white;">
+                    {% else %}
+                    <div class="rounded-circle bg-warning shadow-sm mx-auto mb-3 d-flex align-items-center justify-content-center text-white"
+                        style="width: 120px; height: 120px; font-size: 3rem; border: 4px solid white;">
+                        <i class="fas fa-hand-holding-heart"></i>
+                    </div>
+                    {% endif %}
+                    <h5 class="fw-bold mb-0">{{ caretaker.full_name }}</h5>
+                    <p class="text-warning small fw-medium mb-2" style="color: #fd7e14 !important;"><i
+                            class="fas fa-paw me-1"></i> Caretaker</p>
+                </div>
+
+                <!-- Card Body with Details -->
+                <div class="card-body px-4 pt-3 pb-4">
+                    <ul class="list-unstyled mb-4 small text-muted">
+                        <li class="mb-2"><i class="fas fa-briefcase me-2 text-primary"></i> <strong>Experience:</strong>
+                            {{ caretaker.experience|default:"0" }} years</li>
+                        <li class="mb-2"><i class="fas fa-list-check me-2 text-primary"></i> <strong>Services:</strong>
+                            <span class="d-inline-block text-truncate align-bottom" style="max-width: 180px;"
+                                title="{{ caretaker.services_offered }}">{{ caretaker.services_offered|default:"Standard
+                                care" }}</span></li>
+                        <li class="mb-2"><i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                            <strong>Location:</strong> <span class="d-inline-block text-truncate align-bottom"
+                                style="max-width: 200px;" title="{{ caretaker.address }}">{{ caretaker.address }}</span>
+                        </li>
+                    </ul>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'book_care' caretaker.id %}"
+                            class="btn rounded-pill fw-bold text-white shadow-sm"
+                            style="background-color: #fd7e14; border-color: #fd7e14;">
+                            <i class="far fa-calendar-alt me-2"></i> Book Care Session
+                        </a>
+                        <a href="{% url 'caretaker_profile' caretaker.id %}" class="btn rounded-pill bg-white"
+                            style="color: #fd7e14; border: 1px solid #fd7e14;">
+                            <i class="far fa-eye me-2"></i> View Full Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted mb-3" style="font-size: 4rem;">
+                <i class="fas fa-hand-holding-heart opacity-50"></i>
+            </div>
+            <h4 class="fw-bold">No Caretakers Available</h4>
+            <p class="text-muted">There are currently no approved caretakers in our system. Please check back later.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

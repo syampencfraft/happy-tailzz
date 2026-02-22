@@ -14,9 +14,17 @@
                 <h1 class="display-3">Your Pet's Happy Place Starts Here.</h1>
                 <p class="lead mb-4">Discover professional pet care services tailored to your furry friend's needs. From
                     grooming to expert veterinary care, we've got it all.</p>
-                <div class="d-flex gap-3">
+                <div class="d-flex gap-3 flex-wrap">
+                    {% if request.session.role == 'owner' %}
+                    <a href="{% url 'list_vets' %}" class="btn btn-primary btn-lg px-4 shadow"><i
+                            class="fas fa-user-md me-2"></i> Book a Vet</a>
+                    <a href="{% url 'list_caretakers' %}" class="btn btn-outline-light btn-lg px-4"><i
+                            class="fas fa-hand-holding-heart me-2"></i> Find a Caretaker</a>
+                    {% else %}
                     <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-4 shadow">Get Started</a>
-                    <a href="#" class="btn btn-outline-light btn-lg px-4">Our Services</a>
+                    <a href="{% url 'list_vets' %}" class="btn btn-outline-light btn-lg px-4">Book a Vet</a>
+                    <a href="{% url 'list_caretakers' %}" class="btn btn-outline-light btn-lg px-4">Find a Caretaker</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -56,7 +64,7 @@
                     <h4>Vet Consultation</h4>
                     <p class="text-muted">Expert veterinary care and routine checkups from licensed professionals who
                         love animals.</p>
-                    <a href="#" class="text-primary fw-bold text-decoration-none">Learn More <i
+                    <a href="{% url 'list_vets' %}" class="text-primary fw-bold text-decoration-none">Book Vet <i
                             class="fas fa-arrow-right ms-2"></i></a>
                 </div>
             </div>
@@ -64,13 +72,13 @@
             <div class="col-md-4">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-graduation-cap"></i>
+                        <i class="fas fa-hand-holding-heart"></i>
                     </div>
-                    <h4>Pet Training</h4>
-                    <p class="text-muted">Help your pet learn new skills and behaviors with our positive, reward-based
-                        training programs.</p>
-                    <a href="#" class="text-primary fw-bold text-decoration-none">Learn More <i
-                            class="fas fa-arrow-right ms-2"></i></a>
+                    <h4>Pet Caretaking</h4>
+                    <p class="text-muted">Professional pet sitters and caretakers to give your pet the love and
+                        attention they need when you're away.</p>
+                    <a href="{% url 'list_caretakers' %}" class="text-primary fw-bold text-decoration-none">Book
+                        Caretaker <i class="fas fa-arrow-right ms-2"></i></a>
                 </div>
             </div>
         </div>

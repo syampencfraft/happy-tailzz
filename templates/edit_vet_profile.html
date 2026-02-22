@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-header bg-success text-white text-center py-4 rounded-top-4">
+                    <h3 class="fw-bold mb-0"><i class="fas fa-user-edit me-2"></i>Edit Professional Profile</h3>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <!-- Profile Image Section -->
+                        <div class="text-center mb-4">
+                            {% if vet.profile_image %}
+                            <img src="{{ vet.profile_image.url }}" class="rounded-circle mb-3 shadow-sm"
+                                style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #198754;">
+                            {% else %}
+                            <div class="rounded-circle bg-success bg-opacity-10 text-success mx-auto mb-3 d-flex align-items-center justify-content-center border border-success"
+                                style="width: 120px; height: 120px; font-size: 3rem;">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            {% endif %}
+                            <div class="mt-2">
+                                <label for="profile_image" class="form-label text-muted small fw-bold">Update Profile
+                                    Picture</label>
+                                <input type="file" id="profile_image" name="profile_image"
+                                    class="form-control form-control-sm mx-auto" style="max-width: 250px;"
+                                    accept="image/*">
+                            </div>
+                        </div>
+
+                        <!-- Professional Details -->
+                        <h5 class="fw-bold text-success mb-3 border-bottom pb-2">Professional Information</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold opacity-75">Full Name</label>
+                            <input type="text" name="full_name" class="form-control bg-light"
+                                value="{{ vet.full_name }}" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold opacity-75">Qualifications</label>
+                                <input type="text" name="qualification" class="form-control bg-light"
+                                    value="{{ vet.qualification|default:'' }}" placeholder="e.g. DVM, BVSc">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold opacity-75">Registration No.</label>
+                                <input type="text" name="registration_number" class="form-control bg-light"
+                                    value="{{ vet.registration_number|default:'' }}">
+                            </div>
+                        </div>
+
+                        <!-- Contact Details -->
+                        <h5 class="fw-bold text-success mb-3 mt-4 border-bottom pb-2">Contact Details</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold opacity-75">Email Address</label>
+                            <input type="email" class="form-control bg-secondary bg-opacity-10 text-muted"
+                                value="{{ vet.email }}" disabled title="Email cannot be changed">
+                            <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Email address cannot be
+                                changed.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold opacity-75">Phone Number</label>
+                            <input type="text" name="phone" class="form-control bg-light" value="{{ vet.phone }}"
+                                required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold opacity-75">Clinic / Practice Address</label>
+                            <textarea name="address" class="form-control bg-light" rows="3"
+                                required>{{ vet.address }}</textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5 pt-3 border-top">
+                            <a href="{% url 'vet_dashboard' %}" class="btn btn-outline-secondary px-4 me-md-2"
+                                style="border-radius: 30px;">Cancel</a>
+                            <button type="submit" class="btn btn-success px-5 fw-bold shadow-sm"
+                                style="border-radius: 30px;">
+                                <i class="fas fa-save me-2"></i> Save Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -38,16 +38,35 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/">Home</a>
                     </li>
+                    {% if not request.session.user_id or request.session.role == 'owner' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'discover_pets' %}">Discover Pets</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'predict_breed' %}">Breed Prediction</a>
                     </li>
+                    {% endif %}
+
+                    {% if request.session.role == 'caretaker' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Services</a>
+                        <a class="nav-link fw-bold text-success" href="{% url 'caretaker_earnings' %}">
+                            <i class="fas fa-wallet me-1"></i> Income Calculation
+                        </a>
                     </li>
-                    {% if request.session.name %}
+                    {% elif request.session.role == 'vet' %}
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-success" href="{% url 'vet_income' %}">
+                            <i class="fas fa-wallet me-1"></i> Income Calculation
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if request.session.user_id %}
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold text-primary" href="{% url request.session.role|add:'_dashboard' %}">
+                            <i class="fas fa-th-large me-1"></i> Dashboard
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <span class="nav-link fw-bold text-dark">Welcome, {{ request.session.name }}</span>
                     </li>

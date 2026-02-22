@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <!-- Income Hero Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 mb-4"
+                style="border-radius: 15px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                <div class="card-body p-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="display-5 fw-bold mb-2">Income Calculation</h2>
+                            <p class="lead mb-0">Track your earnings and monitor your performance as a premium
+                                caretaker.</p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                            <div class="bg-white bg-opacity-25 rounded p-4 d-inline-block shadow-sm">
+                                <small class="text-white-50 d-block mb-1">Total Earnings</small>
+                                <h2 class="fw-bold mb-0 text-white">${{ total_income|default:"0.00" }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings Breakdown -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 sticky-top bg-white"
+                    style="border-radius: 15px 15px 0 0;">
+                    <h4 class="fw-bold mb-0"><i class="fas fa-history me-2 text-success"></i>Payment History</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if paid_bookings %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="bg-light">
+                                <tr class="text-muted small uppercase">
+                                    <th class="border-0">Pet & Owner</th>
+                                    <th class="border-0">Service Date</th>
+                                    <th class="border-0">Amount</th>
+                                    <th class="border-0">Payment Method</th>
+                                    <th class="border-0 text-end">Date Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in paid_bookings %}
+                                <tr>
+                                    <td class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            {% if booking.pet.pet_image %}
+                                            <img src="{{ booking.pet.pet_image.url }}" class="rounded-circle me-3"
+                                                style="width: 45px; height: 45px; object-fit: cover;">
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">{{ booking.pet.name }}</h6>
+                                                <small class="text-muted">{{ booking.owner.full_name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="border-0">{{ booking.booking_date }}</td>
+                                    <td class="border-0"><span class="fw-bold text-success">${{ booking.amount }}</span>
+                                    </td>
+                                    <td class="border-0 text-capitalize">
+                                        {{ booking.care_payment.payment_method|title }}
+                                    </td>
+                                    <td class="border-0 text-end text-muted small">
+                                        {{ booking.payment_date_display }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-wallet fa-3x text-light mb-3"></i>
+                        <p class="text-muted">No completed payments found yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

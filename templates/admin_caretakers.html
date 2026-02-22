@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}" class="text-decoration-none fw-bold">Admin
+                    Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Caretaker Performance</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h2 class="fw-bold" style="color: #fd7e14;"><i class="fas fa-hand-holding-heart me-2"></i>Caretaker
+                Performance List</h2>
+            <p class="text-muted">Ranked by highest average client review and total number of care bookings.</p>
+        </div>
+    </div>
+
+    <!-- Caretakers Table -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4 py-3">Caretaker</th>
+                            <th class="py-3">Average Rating</th>
+                            <th class="py-3">Bookings</th>
+                            <th class="py-3 text-end pe-4">Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for caretaker in caretakers %}
+                        <tr>
+                            <td class="ps-4 py-3">
+                                <div class="d-flex align-items-center">
+                                    {% if caretaker.profile_image %}
+                                    <img src="{{ caretaker.profile_image.url }}" class="rounded-circle me-3" width="50"
+                                        height="50" style="object-fit: cover; border: 2px solid #fd7e14;">
+                                    {% else %}
+                                    <div class="rounded-circle bg-warning me-3 d-flex align-items-center justify-content-center text-white"
+                                        style="width: 50px; height: 50px;">
+                                        <i class="fas fa-hand-holding-heart"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">{{ caretaker.full_name }}</h6>
+                                        <span
+                                            class="badge bg-warning-subtle text-warning mt-1 border border-warning-subtle">
+                                            {% if caretaker.is_approved %}Active{% else %}Pending{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if caretaker.avg_rating %}
+                                <div class="text-warning mb-1">
+                                    <i class="fas fa-star"></i>
+                                    <span class="fw-bold text-dark ms-1">{{ caretaker.avg_rating|floatformat:1 }} /
+                                        5.0</span>
+                                </div>
+                                {% else %}
+                                <span class="text-muted small fst-italic">No reviews yet</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary rounded-pill px-3 py-2 fw-medium">
+                                    {{ caretaker.booking_count }} Total
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex flex-column text-end">
+                                    <small><i class="fas fa-phone me-2 text-muted"></i>{{ caretaker.phone }}</small>
+                                    <small><i class="fas fa-envelope me-2 text-muted"></i>{{ caretaker.email }}</small>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-users-slash fa-3x mb-3 text-light"></i>
+                                    <p>No caretakers found.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

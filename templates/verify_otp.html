@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="auth-wrapper">
+    <div class="auth-container" style="max-width: 500px;">
+        <h3>Verify Email</h3>
+        <p class="text-center text-light mb-4 text-opacity-75">
+            We've sent a 6-digit OTP to your email.<br>
+            Please enter it below to complete registration.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <input class="form-control text-center" style="letter-spacing: 0.5rem; font-size: 1.5rem;" type="text"
+                    name="otp" placeholder="XXXXXX" maxlength="6" pattern="\d{6}" title="Please enter a 6-digit OTP"
+                    required>
+            </div>
+
+            <button class="btn btn-primary mt-2 w-100" type="submit">Verify & Register</button>
+            <div class="text-center mt-3">
+                <a href="{% url 'register' %}" class="btn-link text-decoration-none">Back to Registration</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* Reuse auth styling container but adapt to smaller width */
+    .auth-container {
+        animation: fadeInUp 0.5s;
+    }
+</style>
+
+{% endblock %}
