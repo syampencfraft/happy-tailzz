@@ -16,7 +16,7 @@
                         <div class="col-md-4 text-md-end mt-4 mt-md-0">
                             <div class="bg-white bg-opacity-25 rounded p-4 d-inline-block shadow-sm">
                                 <small class="text-white-50 d-block mb-1">Total Earnings</small>
-                                <h2 class="fw-bold mb-0 text-white">${{ total_income|default:"0.00" }}</h2>
+                                <h2 class="fw-bold mb-0 text-white">₹{{ total_income|default:"0.00" }}</h2>
                             </div>
                         </div>
                     </div>
@@ -69,8 +69,8 @@
                                             {{ appointment.reason }}
                                         </small>
                                     </td>
-                                    <td class="border-0"><span class="fw-bold text-success">${{
-                                            appointment.payment.amount }}</span>
+                                    <td class="border-0"><span class="fw-bold text-success">
+                                            ₹{{appointment.payment.amount }}</span>
                                     </td>
                                     <td class="border-0 text-capitalize">
                                         {{ appointment.payment.payment_method|title }}

@@ -1,204 +1,292 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <!-- Header Hero Section -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm border-0 mb-4"
-                style="border-radius: 15px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
-                <div class="card-body p-5">
-                    <h2 class="display-5 fw-bold mb-2">Veterinarian Dashboard</h2>
-                    <p class="lead mb-4">Manage your appointments, diagnose pets, and track treatments effectively.</p>
-                    <div class="d-flex gap-3 align-items-center">
-                        <div class="bg-white bg-opacity-25 rounded p-3 text-center" style="min-width: 120px;">
+<div class="container py-5 animate-up">
+    <!-- Premium Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="p-5 rounded-5 shadow-lg border-0 position-relative overflow-hidden"
+                style="background: linear-gradient(135deg, hsl(160, 60%, 40%), hsl(160, 70%, 25%));">
+                <div class="position-relative z-index-2">
+                    <h2 class="display-5 fw-bold text-white mb-2">Veterinarian Dashboard</h2>
+                    <p class="lead text-white-50 mb-4" style="max-width: 600px;">Optimize your schedule and provide
+                        expert care to every furry patient.</p>
+                    <div class="d-flex gap-4 align-items-center">
+                        <div
+                            class="bg-white bg-opacity-10 backdrop-blur rounded-4 px-4 py-3 text-center border border-white border-opacity-10">
                             <h3 class="fw-bold mb-0 text-white">{{ pending_count }}</h3>
-                            <small class="text-white-50">Pending Appts</small>
+                            <small class="text-white-50 text-uppercase ls-1" style="font-size: 0.7rem;">Pending
+                                Status</small>
                         </div>
-                        <div class="bg-white bg-opacity-25 rounded p-3 text-center" style="min-width: 120px;">
+                        <div
+                            class="bg-white bg-opacity-10 backdrop-blur rounded-4 px-4 py-3 text-center border border-white border-opacity-10">
                             <h3 class="fw-bold mb-0 text-white">{{ treated_count }}</h3>
-                            <small class="text-white-50">Treated Pets</small>
+                            <small class="text-white-50 text-uppercase ls-1" style="font-size: 0.7rem;">Treated
+                                Total</small>
                         </div>
-                        <div class="ms-auto">
+                        <div class="ms-auto d-none d-md-block">
                             <a href="{% url 'edit_vet_profile' %}"
-                                class="btn btn-light text-success fw-bold rounded-pill px-4 shadow-sm">
-                                <i class="fas fa-user-edit me-2"></i> Edit Profile
+                                class="btn btn-light fw-bold rounded-pill px-4 shadow-sm text-primary">
+                                <i class="fas fa-cog me-2"></i> Settings
                             </a>
                         </div>
                     </div>
                 </div>
+                <i class="fas fa-stethoscope position-absolute text-white opacity-10"
+                    style="font-size: 15rem; bottom: -50px; right: -50px; transform: rotate(-15deg);"></i>
             </div>
         </div>
     </div>
 
-    <div class="row">
-        <!-- Appointments -->
-        <div class="col-md-12">
-            <div class="card shadow-sm border-0 h-100" style="border-radius: 15px;">
-                <div
-                    class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                    <h4 class="fw-bold mb-0"><i class="fas fa-stethoscope me-2 text-success"></i>Appointments
+    <div class="row g-4">
+        <!-- Appointments Table -->
+        <div class="col-lg-8">
+            <div class="feature-card h-100 border-0">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0 text-primary d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2"></i> Recent Appointments
                     </h4>
                 </div>
-                <div class="card-body p-4">
-                    {% if appointments %}
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead class="bg-light">
-                                <tr class="text-muted small uppercase">
-                                    <th class="border-0">Pet & Owner</th>
-                                    <th class="border-0">Date & Time</th>
-                                    <th class="border-0">Status</th>
-                                    <th class="border-0 text-end">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for appointment in appointments %}
-                                <tr>
-                                    <td class="border-0">
-                                        <div class="d-flex align-items-center">
-                                            {% if appointment.pet.pet_image %}
-                                            <img src="{{ appointment.pet.pet_image.url }}" class="rounded-circle me-3"
-                                                style="width: 45px; height: 45px; object-fit: cover;">
-                                            {% endif %}
-                                            <div>
-                                                <h6 class="mb-0 fw-bold">{{ appointment.pet.name }}</h6>
-                                                <small class="text-muted">{{ appointment.owner.full_name }}</small>
-                                            </div>
+
+                {% if appointments %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle custom-table">
+                        <thead>
+                            <tr>
+                                <th class="text-muted fw-semibold small">PET & OWNER</th>
+                                <th class="text-muted fw-semibold small">SCHEDULE</th>
+                                <th class="text-muted fw-semibold small">STATUS</th>
+                                <th class="text-muted fw-semibold small text-end">ACTION</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appointment in appointments %}
+                            <tr class="border-transparent">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if appointment.pet.pet_image %}
+                                        <img src="{{ appointment.pet.pet_image.url }}" class="rounded-3 me-3"
+                                            style="width: 50px; height: 50px; object-fit: cover; border: 2px solid var(--primary-light);">
+                                        {% endif %}
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">{{ appointment.pet.name }}</h6>
+                                            <small class="text-muted">{{ appointment.owner.full_name }}</small>
                                         </div>
-                                    </td>
-                                    <td class="border-0">
-                                        <div class="fw-medium">{{ appointment.appointment_date }}</div>
-                                        <small class="text-muted">{{ appointment.appointment_time }}</small>
-                                    </td>
-                                    <td class="border-0">
-                                        {% if appointment.status == 'pending' %}
-                                        <span class="badge bg-warning-subtle text-warning px-3 py-2">Pending</span>
-                                        {% elif appointment.status == 'confirmed' %}
-                                        <span class="badge bg-info-subtle text-info px-3 py-2">Confirmed</span>
-                                        {% elif appointment.status == 'treated' %}
-                                        <span class="badge bg-success-subtle text-success px-3 py-2">Treated</span>
-                                        {% else %}
-                                        <span class="badge bg-danger-subtle text-danger px-3 py-2">Cancelled</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">{{ appointment.appointment_date }}</div>
+                                    <small class="text-muted">{{ appointment.appointment_time }}</small>
+                                </td>
+                                <td>
+                                    {% if appointment.status == 'pending' %}
+                                    <span class="badge badge-soft-warning">Pending</span>
+                                    {% elif appointment.status == 'confirmed' %}
+                                    <span class="badge badge-soft-info">Confirmed (₹{{ appointment.amount }})</span>
+                                    {% elif appointment.status == 'paid' %}
+                                    <span class="badge badge-soft-primary"
+                                        style="background: #e0e7ff; color: #4338ca;">Paid & Ready</span>
+                                    {% elif appointment.status == 'treated' %}
+                                    <span class="badge badge-soft-success">Treated</span>
+                                    {% else %}
+                                    <span class="badge badge-soft-danger">Cancelled</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2 align-items-center">
+                                        {% if appointment.status == 'paid' %}
+                                        <button class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
+                                            data-bs-toggle="modal" data-bs-target="#treatModal{{appointment.id}}">
+                                            <i class="fas fa-stethoscope me-1"></i> Treat
+                                        </button>
                                         {% endif %}
 
-                                        {% if appointment.payment and appointment.payment.status == 'completed' %}
-                                        <div class="mt-1 small">
-                                            <span class="text-success"><i class="fas fa-check-circle"></i> Paid (${{
-                                                appointment.payment.amount }})</span>
-                                        </div>
-                                        {% endif %}
-                                        {% if appointment.treatment_summary %}
-                                        <div class="mt-1 small text-muted">
-                                            <i class="fas fa-file-medical"></i> Has Treatment Summary
-                                        </div>
-                                        {% endif %}
-                                    </td>
-                                    <td class="border-0 text-end">
                                         <div class="dropdown">
-                                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
-                                                data-bs-toggle="dropdown">
-                                                Manage
+                                            <button class="btn btn-icon" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-v text-muted"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-3"
-                                                style="min-width: 250px;">
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 rounded-4"
+                                                style="min-width: 200px;">
                                                 {% if appointment.status == 'pending' %}
-                                                <li>
+                                                <li class="p-2 border-bottom mb-2">
                                                     <form action="{% url 'update_appointment_status' appointment.id %}"
                                                         method="POST">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="status" value="confirmed">
-                                                        <button type="submit" class="btn btn-sm btn-primary w-100"><i
-                                                                class="fas fa-check me-2"></i>Confirm
-                                                            Appointment</button>
-                                                    </form>
-                                                </li>
-                                                {% endif %}
-
-                                                {% if appointment.status == 'confirmed' %}
-                                                <li>
-                                                    <form action="{% url 'update_appointment_status' appointment.id %}"
-                                                        method="POST">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="status" value="treated">
-                                                        <div class="mb-2 mt-2">
-                                                            <label class="small fw-bold text-muted">Treatment
-                                                                Summary</label>
-                                                            <textarea name="treatment_summary"
-                                                                class="form-control form-control-sm" rows="2" required
-                                                                placeholder="Diagnosis and treatment details..."></textarea>
+                                                        <div class="input-group input-group-sm mb-2">
+                                                            <span class="input-group-text border-0 bg-light">₹</span>
+                                                            <input type="number" name="amount"
+                                                                class="form-control border-light bg-light"
+                                                                placeholder="Set Fee" required>
                                                         </div>
-                                                        <button type="submit" class="btn btn-sm btn-success w-100"><i
-                                                                class="fas fa-stethoscope me-2"></i>Mark
-                                                            Treated</button>
+                                                        <button type="submit"
+                                                            class="btn btn-success btn-sm w-100 rounded-pill shadow-sm">Confirm
+                                                            Booking</button>
                                                     </form>
                                                 </li>
                                                 {% endif %}
 
-                                                {% if appointment.status != 'treated' and appointment.status !=
-                                                'cancelled' %}
+                                                {% if appointment.status == 'paid' %}
                                                 <li>
-                                                    <hr class="dropdown-divider">
+                                                    <button class="dropdown-item rounded-3 mb-1" data-bs-toggle="modal"
+                                                        data-bs-target="#treatModal{{appointment.id}}">
+                                                        <i class="fas fa-notes-medical me-2 text-primary"></i>Treat &
+                                                        Record
+                                                    </button>
                                                 </li>
+                                                {% endif %}
+
+                                                {% if appointment.status == 'pending' or appointment.status == 'confirmed' %}
+                                                
                                                 <li>
                                                     <form action="{% url 'update_appointment_status' appointment.id %}"
                                                         method="POST">
                                                         {% csrf_token %}
                                                         <input type="hidden" name="status" value="cancelled">
-                                                        <button type="submit" class="dropdown-item text-danger small"><i
-                                                                class="fas fa-times me-2"></i>Cancel
-                                                            Appointment</button>
+                                                        <button type="submit"
+                                                            class="dropdown-item rounded-3 text-danger"><i
+                                                                class="fas fa-times-circle me-2"></i>Cancel</button>
                                                     </form>
                                                 </li>
                                                 {% endif %}
 
                                                 {% if appointment.status == 'treated' %}
-                                                <li class="text-center small text-muted">No further actions</li>
+                                                <li class="p-2 text-center text-muted small">
+                                                    <i class="fas fa-check-circle me-1"></i> Session Completed
+                                                </li>
                                                 {% endif %}
                                             </ul>
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-calendar-day fa-3x text-light mb-3"></i>
-                        <p class="text-muted">No appointments yet.</p>
-                    </div>
-                    {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="bg-primary-light display-4 p-4 d-inline-block rounded-circle mb-4">
+                        <i class="fas fa-calendar-xmark text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold">No Appointments</h5>
+                    <p class="text-muted small">Your patient list is empty for now.</p>
+                </div>
+                {% endif %}
             </div>
         </div>
-    </div>
 
-    <!-- Reviews Section -->
-    <div class="row mt-4 mb-5">
-        <div class="col-md-12">
-            <div class="card shadow-sm border-0" style="border-radius: 15px;">
-                <div class="card-header bg-transparent border-0 pt-4 px-4 sticky-top bg-white"
-                    style="border-radius: 15px 15px 0 0;">
-                    <h4 class="fw-bold mb-0"><i class="fas fa-star me-2 text-warning"></i>Client Reviews</h4>
-                </div>
-                <div class="card-body p-4">
-                    {% if reviews %}
-                    <div class="row g-4">
-                        {% for review in reviews %}
-                        <div class="col-md-6">
-                            {{ review.display_html|safe }}
-                        </div>
-                        {% endfor %}
+        <!-- Sidebar / Reviews -->
+        <div class="col-lg-4">
+            <div class="bg-white p-4 rounded-5 shadow-sm border border-light mb-4">
+                <h5 class="fw-bold mb-4">Client Feedback</h5>
+                {% if reviews %}
+                <div class="reviews-scroll" style="max-height: 500px; overflow-y: auto;">
+                    {% for review in reviews %}
+                    <div class="mb-3">
+                        {{ review.display_html|safe }}
                     </div>
-                    {% else %}
-                    <div class="text-center py-5">
-                        <i class="far fa-comment-dots fa-3x text-light mb-3"></i>
-                        <p class="text-muted">No reviews yet.</p>
-                    </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
+                {% else %}
+                <p class="text-muted small text-center py-4">No feedback received yet.</p>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modals rendered outside of table to avoid overflow/nesting issues -->
+{% for appointment in appointments %}
+{% if appointment.status == 'paid' %}
+<div class="modal fade" id="treatModal{{appointment.id}}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-5 shadow-lg">
+            <div class="modal-body p-5">
+                <div class="text-center mb-4">
+                    <div class="bg-primary-light p-3 rounded-circle d-inline-block mb-3">
+                        <i class="fas fa-notes-medical text-primary fa-2x"></i>
+                    </div>
+                    <h4 class="fw-bold">Treatment for {{ appointment.pet.name }}</h4>
+                    <p class="text-muted small">Record the outcome and instructions for the owner</p>
+                </div>
+                <form action="{% url 'update_appointment_status' appointment.id %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="treated">
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Diagnosis & Summary</label>
+                        <textarea name="treatment_summary" class="form-control rounded-4 p-3 border-light bg-light mb-3"
+                            rows="3" required placeholder="What treatment was provided?"></textarea>
+
+                        <label class="form-label small fw-bold text-muted text-uppercase">Note for Owner
+                            (Instructions)</label>
+                        <textarea name="doctor_note" class="form-control rounded-4 p-3 border-light bg-light" rows="3"
+                            placeholder="Any specific instructions for the owner?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow">
+                        Finish & Record <i class="fas fa-check-circle ms-1"></i>
+                    </button>
+                    <button type="button" class="btn btn-link w-100 mt-2 text-muted text-decoration-none small"
+                        data-bs-dismiss="modal">
+                        Close
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<style>
+    .custom-table thead th {
+        border: none;
+        padding-bottom: 20px;
+    }
+
+    .custom-table tbody tr {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .badge-soft-warning {
+        background: #fff7ed;
+        color: #ea580c;
+    }
+
+    .badge-soft-info {
+        background: #f0f9ff;
+        color: #0284c7;
+    }
+
+    .badge-soft-success {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+
+    .badge-soft-danger {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .badge-soft-primary {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background: #f1f5f9;
+        transform: scale(1.05);
+    }
+</style>
 {% endblock %}

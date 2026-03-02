@@ -76,6 +76,8 @@
                                         <span class="badge bg-warning-subtle text-warning px-3 py-2">Pending</span>
                                         {% elif booking.status == 'confirmed' %}
                                         <span class="badge bg-info-subtle text-info px-3 py-2">Confirmed</span>
+                                        {% elif booking.status == 'paid' %}
+                                        <span class="badge bg-primary-subtle text-primary px-3 py-2">Paid & Ready</span>
                                         {% elif booking.status == 'completed' %}
                                         <span class="badge bg-success-subtle text-success px-3 py-2">Completed</span>
                                         {% else %}
@@ -84,8 +86,9 @@
 
                                         {% if booking.amount %}
                                         <div class="mt-1 small">
-                                            <span class="text-muted">Fee: ${{ booking.amount }}</span>
-                                            {% if booking.care_payment %}
+                                            <span class="text-muted">Fee: &#8377; {{ booking.amount }}</span>
+                                            {% if booking.care_payment or booking.status == 'paid' or booking.status == 'completed' %}
+                                            
                                             <span class="text-success ms-1"><i class="fas fa-check-circle"></i>
                                                 Paid</span>
                                             {% else %}
@@ -111,7 +114,7 @@
                                                         <input type="hidden" name="status" value="confirmed">
                                                         <div class="mb-2">
                                                             <label class="small fw-bold text-muted">Set Service Fee
-                                                                ($)</label>
+                                                                (₹)</label>
                                                             <input type="number" name="amount"
                                                                 class="form-control form-control-sm" step="0.01"
                                                                 required placeholder="e.g. 50.00">
@@ -122,24 +125,20 @@
                                                 </li>
                                                 {% endif %}
 
-                                                {% if booking.status == 'confirmed' %}
+                                                {% if booking.status == 'confirmed' or booking.status == 'paid' %}
                                                 <li>
-                                                    <form action="{% url 'update_care_status' booking.id %}"
-                                                        method="POST">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="status" value="completed">
-                                                        {% if booking.care_payment %}
-                                                        <button type="submit" class="btn btn-sm btn-success w-100"><i
-                                                                class="fas fa-flag-checkered me-2"></i>Mark
-                                                            Completed</button>
-                                                        {% else %}
-                                                        <button type="button"
-                                                            class="btn btn-sm btn-light w-100 text-muted" disabled
-                                                            title="Waiting for payment">
-                                                            <i class="fas fa-lock me-2"></i>Wait for Payment
-                                                        </button>
-                                                        {% endif %}
-                                                    </form>
+                                                    {% if booking.status == 'paid' %}
+                                                    <button type="button" class="btn btn-sm btn-success w-100"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#completeModal{{ booking.id }}">
+                                                        <i class="fas fa-flag-checkered me-2"></i>Mark Completed
+                                                    </button>
+                                                    {% else %}
+                                                    <button type="button" class="btn btn-sm btn-light w-100 text-muted"
+                                                        disabled title="Waiting for payment">
+                                                        <i class="fas fa-lock me-2"></i>Wait for Payment
+                                                    </button>
+                                                    {% endif %}
                                                 </li>
                                                 {% endif %}
 
@@ -165,13 +164,51 @@
                                         </div>
                                     </td>
                                 </tr>
+
+                                <!-- Completion Modal -->
+                                {% if booking.status == 'paid' %}
+                                <div class="modal fade" id="completeModal{{ booking.id }}" tabindex="-1"
+                                    aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content rounded-5 border-0 shadow-lg">
+                                            <div class="modal-header border-0 pb-0">
+                                                <h5 class="modal-title fw-bold">Complete Session for {{ booking.pet.name }}</h5>
+                                                    
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <form method="post" action="{% url 'update_care_status' booking.id %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="completed">
+                                                <div class="modal-body py-4">
+                                                    <label
+                                                        class="form-label small fw-bold text-muted text-uppercase mb-3">Session
+                                                        Summary & Care Notes</label>
+                                                    <textarea class="form-control border-0 bg-light p-3" name="summary"
+                                                        placeholder="Describe how the session went, any observations, or tips for the owner..."
+                                                        style="height: 150px; border-radius: 15px;" required></textarea>
+                                                </div>
+                                                <div class="modal-footer border-0 pt-0 pb-4">
+                                                    <button type="button" class="btn btn-light rounded-pill px-4"
+                                                        data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit"
+                                                        class="btn btn-primary rounded-pill px-5 shadow border-0"
+                                                        style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                                        Finish Session <i class="fas fa-check-circle ms-1"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     {% else %}
                     <div class="text-center py-5">
-                        <i class="fas fa-calendar-day fa-3x text-light mb-3"></i>
+                        <i class="fas fa-hand-holding-heart fa-3x text-light mb-3"></i>
                         <p class="text-muted">No care requests yet.</p>
                     </div>
                     {% endif %}

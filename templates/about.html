@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="about-hero py-5 text-center bg-primary text-white mb-5"
+    style="background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);">
+    <div class="container py-4">
+        <h1 class="display-4 fw-bold mb-3">About PetCare</h1>
+        <p class="lead mb-0 opacity-75">Your Trusted Partner in Premium Pet Health & Happiness</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <h2 class="fw-bold mb-4">Our Mission</h2>
+            <p class="text-muted lead">At PetCare, we believe every pet deserves specialized, professional care. Our
+                mission is to bridge the gap between pet owners, veterinary specialists, and professional caretakers
+                through a seamless, technology-driven platform.</p>
+            <p class="text-muted">Founded in 2026, we've helped thousands of pet parents find the right medical advice
+                and daily care for their furry family members. We prioritize trust, transparency, and top-tier expertise
+                in every interaction.</p>
+            <div class="d-flex gap-3 mt-4">
+                <div class="text-center p-3 bg-light rounded-4 flex-fill">
+                    <h3 class="fw-bold text-primary mb-1">5k+</h3>
+                    <p class="small text-muted mb-0">Happy Pets</p>
+                </div>
+                <div class="text-center p-3 bg-light rounded-4 flex-fill">
+                    <h3 class="fw-bold text-primary mb-1">200+</h3>
+                    <p class="small text-muted mb-0">Expert Vets</p>
+                </div>
+                <div class="text-center p-3 bg-light rounded-4 flex-fill">
+                    <h3 class="fw-bold text-primary mb-1">500+</h3>
+                    <p class="small text-muted mb-0">Caretakers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 text-center">
+            <div class="position-relative">
+                <img src="https://images.unsplash.com/photo-1548191265-cc70d3d45ba1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                    alt="Pet Care" class="img-fluid rounded-5 shadow-lg">
+                <div class="position-absolute bottom-0 start-0 p-4 mb-n3 ms-n3 bg-white rounded-4 shadow-sm no-mobile">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary-light p-3 rounded-circle me-3">
+                            <i class="fas fa-heart text-primary"></i>
+                        </div>
+                        <div class="text-start">
+                            <h6 class="fw-bold mb-0">Quality Care</h6>
+                            <p class="small text-muted mb-0">Certified Professionals Only</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center py-5">
+        <div class="col-12 mb-5">
+            <h2 class="fw-bold">Why Choose PetCare?</h2>
+            <p class="text-muted">Experience the future of pet management and healthcare</p>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4 rounded-5 border border-light h-100 transition-hover">
+                <div class="bg-soft-primary p-4 rounded-circle d-inline-block mb-4">
+                    <i class="fas fa-user-md fa-2x text-primary"></i>
+                </div>
+                <h4 class="fw-bold">Expert Doctors</h4>
+                <p class="text-muted">Access to certified veterinary specialists for expert medical advice and
+                    treatments.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4 rounded-5 border border-light h-100 transition-hover">
+                <div class="bg-soft-success p-4 rounded-circle d-inline-block mb-4">
+                    <i class="fas fa-home fa-2x text-success"></i>
+                </div>
+                <h4 class="fw-bold">Trusted Handlers</h4>
+                <p class="text-muted">Professional pet caretakers who treat your pets with the love and attention they
+                    deserve.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="p-4 rounded-5 border border-light h-100 transition-hover">
+                <div class="bg-soft-warning p-4 rounded-circle d-inline-block mb-4">
+                    <i class="fas fa-history fa-2x text-warning"></i>
+                </div>
+                <h4 class="fw-bold">Live Updates</h4>
+                <p class="text-muted">Real-time status tracking for every appointment and care session, so you're always
+                    informed.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-soft-primary {
+        background-color: rgba(67, 97, 238, 0.1);
+    }
+
+    .bg-soft-success {
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+
+    .bg-soft-warning {
+        background-color: rgba(255, 152, 0, 0.1);
+    }
+
+    .transition-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+        border-color: var(--primary-color) !important;
+    }
+
+    .img-fluid.rounded-5 {
+        border-radius: 2rem !important;
+    }
+
+    @media (max-width: 768px) {
+        .no-mobile {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}

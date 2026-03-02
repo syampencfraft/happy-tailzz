@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - Pet Care</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #333;
+        }
+
+        .invoice-box {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 50px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 50px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 30px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-color);
+            letter-spacing: -1px;
+        }
+
+        .invoice-details h4 {
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #6c757d;
+        }
+
+        .total-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .total-amount {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .footer-note {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+        }
+
+        .print-btn-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        /* Print Utilities */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .invoice-box {
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .print-btn-container,
+            .no-print {
+                display: none !important;
+            }
+
+            @page {
+                margin: 2cm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="print-btn-container no-print">
+        <button onclick="window.print()" class="btn btn-primary btn-lg rounded-pill shadow-lg px-4">
+            <i class="fas fa-print me-2"></i> Print / Save as PDF
+        </button>
+        <button onclick="window.close()" class="btn btn-light btn-lg rounded-pill shadow-sm ms-2">
+            Close
+        </button>
+    </div>
+
+    <div class="invoice-box">
+        <div class="header">
+            <div>
+                <div class="logo-text"><i class="fas fa-paw me-2"></i>PETCARE</div>
+                <p class="text-muted small mt-2">Premium Pet Health & Care Services</p>
+            </div>
+            <div class="text-end invoice-details">
+                <h4 class="mb-0">INVOICE</h4>
+                <p class="text-muted small mb-0">#INV-{{ type|upper }}-{{ object.id }}</p>
+                <p class="text-muted small">Date: {{ date|date:"M d, Y" }}</p>
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-6">
+                <p class="text-muted small text-uppercase fw-bold mb-2">Billed To</p>
+                <h6 class="fw-bold mb-1">{{ object.owner.full_name }}</h6>
+                <p class="text-muted small mb-0">{{ object.owner.email }}</p>
+                <p class="text-muted small mb-0">{{ object.owner.phone }}</p>
+            </div>
+            <div class="col-6 text-end">
+                <p class="text-muted small text-uppercase fw-bold mb-2">Service Provider</p>
+                <h6 class="fw-bold mb-1">
+                    {% if type == 'appointment' %}
+                    Dr. {{ object.vet.full_name }}
+                    {% else %}
+                    {{ object.caretaker.full_name }}
+                    {% endif %}
+                </h6>
+                <p class="text-muted small mb-0">Role: {{ type|title }} Provider</p>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="border-0">Description</th>
+                        <th class="border-0 text-center">Pet</th>
+                        <th class="border-0 text-end">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="py-4">
+                            <h6 class="mb-1 fw-bold">
+                                {% if type == 'appointment' %}
+                                Veterinary Consultation
+                                {% else %}
+                                Pet Care Session
+                                {% endif %}
+                            </h6>
+                            <p class="text-muted small mb-0">{{ object.reason }}</p>
+                        </td>
+                        <td class="py-4 text-center align-middle">{{ object.pet.name }}</td>
+                        <td class="py-4 text-end align-middle fw-bold">&#8377; {{ object.amount }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-section row justify-content-end">
+            <div class="col-md-5">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal</span>
+                    <span>&#8377; {{ object.amount }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Tax (GST 0%)</span>
+                    <span>&#8377; 0.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Total Paid</span>
+                    <span class="total-amount">&#8377; {{ object.amount }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            <p class="mb-1 fw-bold text-dark">Thank you for choosing PetCare!</p>
+            <p class="mb-0">This is a system-generated invoice for your pet's health and happiness. No signature
+                required.</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-open print dialog if specified
+        window.onload = function () {
+            // setTimeout(() => window.print(), 1000);
+        }
+    </script>
+</body>
+
+</html>

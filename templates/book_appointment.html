@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="auth-wrapper py-5">
+    <div class="auth-card" style="max-width: 600px;">
+        <div class="auth-header text-center mb-5">
+            <h2 class="display-6">Book Appointment</h2>
+            <p>Consult with Dr. {{ vet.full_name }}</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="mb-4">
+                <label class="form-label fw-bold"><i class="fas fa-paw me-2 text-primary"></i>Select Your Pet</label>
+                <div class="input-group-modern">
+                    <i class="fas fa-犬"></i>
+                    <select class="form-control" name="pet_id" required>
+                        <option value="" disabled selected>Which pet needs a visit?</option>
+                        {% for pet in pets %}
+                        <option value="{{ pet.id }}">{{ pet.name }} ({{ pet.pet_type|title }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-bold"><i class="fas fa-calendar-alt me-2 text-primary"></i>Preferred
+                        Date</label>
+                    <div class="input-group-modern">
+                        <i class="fas fa-calendar"></i>
+                        <input class="form-control" type="date" name="date" required min="{{ today|date:'Y-m-d' }}">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-bold"><i class="fas fa-clock me-2 text-primary"></i>Preferred
+                        Time</label>
+                    <div class="input-group-modern">
+                        <i class="fas fa-clock"></i>
+                        <input class="form-control" type="time" name="time" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold"><i class="fas fa-notes-medical me-2 text-primary"></i>Reason for
+                    Visit</label>
+                <div class="input-group-modern">
+                    <i class="fas fa-comment-medical" style="top: 2rem;"></i>
+                    <textarea class="form-control" name="reason"
+                        placeholder="Briefly describe the symptoms or reason for the consultation..."
+                        style="height: 120px; padding-top: 1rem;" required></textarea>
+                </div>
+            </div>
+
+            <div class="d-grid mt-5">
+                <button class="btn btn-primary py-3 rounded-pill shadow-lg">
+                    Confirm Booking Request <i class="fas fa-check-circle ms-2"></i>
+                </button>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="{% url 'list_vets' %}" class="text-muted text-decoration-none small">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Veterinarians
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

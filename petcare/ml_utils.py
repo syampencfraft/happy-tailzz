@@ -1,17 +1,28 @@
 import numpy as np
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input, decode_predictions
-from tensorflow.keras.preprocessing import image
-import tensorflow as tf
+import os
 
-# Load the pre-trained MobileNetV2 model
-# This will download the weights (about 14MB) if not already present
-model = MobileNetV2(weights='imagenet')
+# Lazy loading of tensorflow/keras to avoid crashes during startup/migrations
+_model = None
+
+def get_model():
+    global _model
+    if _model is None:
+        from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+        # Load the pre-trained MobileNetV2 model
+        _model = MobileNetV2(weights='imagenet')
+    return _model
 
 def predict_pet_breed(img_path):
     """
     Predicts the breed of a pet from an image using MobileNetV2.
     """
     try:
+        from tensorflow.keras.applications.mobilenet_v2 import preprocess_input, decode_predictions
+        from tensorflow.keras.preprocessing import image
+        import tensorflow as tf
+
+        model = get_model()
+        
         # Load and preprocess the image
         img = image.load_img(img_path, target_size=(224, 224))
         img_array = image.img_to_array(img)

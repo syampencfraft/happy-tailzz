@@ -22,6 +22,10 @@ urlpatterns = [
     path('owner/pet-profile/<int:pet_id>/', views.pet_profile, name='pet_profile'),
     path('owner/edit-pet/<int:pet_id>/', views.edit_pet, name='edit_pet'),
     path('discover-pets/', views.discover_pets, name='discover_pets'),
+    path('about/', views.about, name='about'),
+    path('contact/', views.contact, name='contact'),
+    path('admin-dashboard/messages/', views.admin_messages, name='admin_messages'),
+    path('appointment/', views.book_appointment, name='book_appointment'),
     path('like-pet/<int:pet_id>/', views.like_pet, name='like_pet'),
     path('admin-dashboard/approve-user/<int:user_id>/', views.approve_user, name='approve_user'),
 
@@ -46,4 +50,12 @@ urlpatterns = [
     path('caretaker/update-booking/<int:booking_id>/', views.update_care_status, name='update_care_status'),
     path('caretaker/income/', views.caretaker_income, name='caretaker_earnings'),
     path('caretaker/edit-profile/', views.edit_caretaker_profile, name='edit_caretaker_profile'),
+    
+    # Tracking URLs
+    path('owner/track-appointment/<int:appointment_id>/', views.track_appointment, name='track_appointment'),
+    path('owner/track-care/<int:booking_id>/', views.track_care, name='track_care'),
+    path('owner/invoice/<int:appointment_id>/', views.view_invoice, name='view_invoice'),
+    path('owner/care-invoice/<int:booking_id>/', views.view_care_invoice, name='view_care_invoice'),
+    path('owner/delete-appointment/<int:appointment_id>/', views.delete_appointment, name='delete_appointment'),
+    path('owner/delete-care-booking/<int:booking_id>/', views.delete_care_booking, name='delete_care_booking'),
 ]

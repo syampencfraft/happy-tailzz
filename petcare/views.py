@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.mail import send_mail
-from .models import User, Pet, Appointment, Payment, Review, CareBooking, CarePayment, CareReview
+from .models import User, Pet, Appointment, Payment, Review, CareBooking, CarePayment, CareReview, ContactMessage
 import os
 import random
 from django.conf import settings
@@ -512,7 +512,11 @@ def book_care(request, caretaker_id):
         messages.success(request, f"Care session booked with {caretaker.full_name}")
         return redirect('owner_dashboard')
 
-    return render(request, 'book_care.html', {'caretaker': caretaker, 'pets': pets})
+    return render(request, 'book_care.html', {
+        'caretaker': caretaker, 
+        'pets': pets,
+        'today': timezone.now().date()
+    })
 
 @role_required('caretaker')
 def update_care_status(request, booking_id):
@@ -526,18 +530,19 @@ def update_care_status(request, booking_id):
                 booking.amount = amount
                 booking.status = 'confirmed'
                 booking.save()
-                messages.success(request, f"Booking confirmed with amount ${amount}")
+                messages.success(request, f"Booking confirmed with amount ₹{amount}")
             else:
                 messages.error(request, "Please enter an amount to confirm the booking")
         
         elif status == 'completed':
-            # Check if payment exists and is completed
-            if hasattr(booking, 'care_payment') and booking.care_payment.status == 'completed':
+            # Check if status is paid
+            if booking.status == 'paid' or (hasattr(booking, 'care_payment') and booking.care_payment.status == 'completed'):
+                booking.summary = request.POST.get('summary')
                 booking.status = 'completed'
                 booking.save()
-                messages.success(request, "Booking marked as completed")
+                messages.success(request, "Care session marked as completed")
             else:
-                messages.error(request, "Cannot complete booking: Payment not yet received from owner")
+                messages.error(request, "Waiting for payment confirmation")
                 
         elif status == 'cancelled':
             booking.status = 'cancelled'
@@ -674,7 +679,11 @@ def book_appointment(request, vet_id):
         messages.success(request, f"Appointment booked with Dr. {vet.full_name}")
         return redirect('owner_dashboard')
 
-    return render(request, 'book_appointment.html', {'vet': vet, 'pets': pets})
+    return render(request, 'book_appointment.html', {
+        'vet': vet, 
+        'pets': pets,
+        'today': timezone.now().date()
+    })
 
 @role_required('vet')
 def vet_appointments(request):
@@ -685,13 +694,25 @@ def vet_appointments(request):
 def update_appointment_status(request, appointment_id):
     try:
         appointment = Appointment.objects.get(id=appointment_id, vet_id=request.session['user_id'])
-        status = request.POST.get('status')
-        if status in ['confirmed', 'cancelled', 'treated']:
-            appointment.status = status
-            if status == 'treated':
-                appointment.treatment_summary = request.POST.get('treatment_summary')
-            appointment.save()
-            messages.success(request, f"Appointment status updated to {status}")
+        if request.method == 'POST':
+            status = request.POST.get('status')
+            if status in ['confirmed', 'cancelled', 'treated']:
+                if status == 'confirmed':
+                    amount = request.POST.get('amount')
+                    if not amount:
+                        messages.error(request, "Please set a consultation fee to confirm the appointment")
+                        return redirect('vet_dashboard')
+                    appointment.amount = amount
+                    appointment.status = 'confirmed'
+                elif status == 'treated':
+                    appointment.treatment_summary = request.POST.get('treatment_summary')
+                    appointment.doctor_note = request.POST.get('doctor_note')
+                    appointment.status = 'treated'
+                else:
+                    appointment.status = status
+                    
+                appointment.save()
+                messages.success(request, f"Appointment status updated to {status}")
     except Appointment.DoesNotExist:
         messages.error(request, "Appointment not found")
     
@@ -706,19 +727,25 @@ def process_payment(request, appointment_id):
         return redirect('owner_dashboard')
 
     if request.method == 'POST':
-        method = request.POST['payment_method']
-        amount = request.POST['amount']
+        method = request.POST.get('payment_method')
+        amount = appointment.amount
         
+        if amount is None:
+            messages.error(request, "Appointment fee has not been set yet. Please wait for the veterinarian.")
+            return redirect('track_appointment', appointment_id=appointment.id)
+            
         Payment.objects.create(
             appointment=appointment,
             amount=amount,
             payment_method=method,
             status='completed'
         )
-        messages.success(request, "Payment successful")
-        return redirect('owner_dashboard')
+        appointment.status = 'paid'
+        appointment.save()
+        messages.success(request, f"Payment of ₹{amount} successful via {method.replace('_', ' ').title()}")
+        return redirect('track_appointment', appointment_id=appointment.id)
 
-    return render(request, 'process_payment.html', {'appointment': appointment})
+    return redirect('track_appointment', appointment_id=appointment.id)
 
 @role_required('owner')
 def add_review(request, appointment_id):
@@ -740,7 +767,7 @@ def add_review(request, appointment_id):
             comment=comment
         )
         messages.success(request, "Review submitted successfully")
-        return redirect('owner_dashboard')
+        return redirect('track_appointment', appointment_id=appointment.id)
 
     return render(request, 'add_review.html', {'appointment': appointment})
 
@@ -778,10 +805,12 @@ def process_care_payment(request, booking_id):
             payment_method=method,
             status='completed'
         )
-        messages.success(request, "Payment successful. Caretaker can now complete the session.")
-        return redirect('owner_dashboard')
+        booking.status = 'paid'
+        booking.save()
+        messages.success(request, f"Payment of ₹{amount} successful via {method.replace('_', ' ').title()}")
+        return redirect('track_care', booking_id=booking.id)
 
-    return render(request, 'process_care_payment.html', {'booking': booking})
+    return redirect('track_care', booking_id=booking.id)
 
 @role_required('owner')
 def add_care_review(request, booking_id):
@@ -803,7 +832,7 @@ def add_care_review(request, booking_id):
             comment=comment
         )
         messages.success(request, "Review submitted successfully")
-        return redirect('owner_dashboard')
+        return redirect('track_care', booking_id=booking.id)
 
     return render(request, 'add_care_review.html', {'booking': booking})
 
@@ -864,3 +893,111 @@ def edit_caretaker_profile(request):
         return redirect('caretaker_dashboard')
 
     return render(request, 'edit_caretaker_profile.html', {'caretaker': caretaker})
+@role_required('owner')
+def track_appointment(request, appointment_id):
+    try:
+        appointment = Appointment.objects.get(id=appointment_id, owner_id=request.session['user_id'])
+    except Appointment.DoesNotExist:
+        messages.error(request, "Appointment not found")
+        return redirect('owner_dashboard')
+    
+    review = Review.objects.filter(appointment=appointment).first()
+    return render(request, 'track_appointment.html', {'appointment': appointment, 'review': review})
+
+@role_required('owner')
+def track_care(request, booking_id):
+    try:
+        booking = CareBooking.objects.get(id=booking_id, owner_id=request.session['user_id'])
+    except CareBooking.DoesNotExist:
+        messages.error(request, "Care booking not found")
+        return redirect('owner_dashboard')
+    
+    review = CareReview.objects.filter(care_booking=booking).first()
+    return render(request, 'track_care.html', {'booking': booking, 'review': review})
+
+@role_required('owner')
+def delete_appointment(request, appointment_id):
+    try:
+        appointment = Appointment.objects.get(id=appointment_id, owner_id=request.session['user_id'])
+        # Optional: Only allow deleting finished/cancelled sessions
+        if appointment.status in ['treated', 'cancelled']:
+            appointment.delete()
+            messages.success(request, "Appointment history deleted")
+        else:
+            messages.error(request, "Cannot delete an active appointment")
+    except Appointment.DoesNotExist:
+        messages.error(request, "Appointment not found")
+    return redirect('owner_dashboard')
+
+@role_required('owner')
+def delete_care_booking(request, booking_id):
+    try:
+        booking = CareBooking.objects.get(id=booking_id, owner_id=request.session['user_id'])
+        if booking.status in ['completed', 'cancelled']:
+            booking.delete()
+            messages.success(request, "Care booking history deleted")
+        else:
+            messages.error(request, "Cannot delete an active care booking")
+    except CareBooking.DoesNotExist:
+        messages.error(request, "Booking not found")
+    return redirect('owner_dashboard')
+
+@role_required('owner')
+def view_invoice(request, appointment_id):
+    try:
+        appointment = Appointment.objects.get(id=appointment_id, owner_id=request.session['user_id'])
+        if appointment.status not in ['paid', 'treated']:
+            messages.error(request, "Invoices are only available for paid appointments.")
+            return redirect('track_appointment', appointment_id=appointment.id)
+            
+        return render(request, 'invoice_print.html', {
+            'object': appointment,
+            'type': 'appointment',
+            'date': appointment.payment.payment_date if hasattr(appointment, 'payment') else appointment.created_at
+        })
+    except Appointment.DoesNotExist:
+        messages.error(request, "Appointment not found")
+        return redirect('owner_dashboard')
+
+@role_required('owner')
+def view_care_invoice(request, booking_id):
+    try:
+        booking = CareBooking.objects.get(id=booking_id, owner_id=request.session['user_id'])
+        if booking.status not in ['paid', 'completed']:
+            messages.error(request, "Invoices are only available for paid care sessions.")
+            return redirect('track_care', booking_id=booking.id)
+            
+        return render(request, 'invoice_print.html', {
+            'object': booking,
+            'type': 'care',
+            'date': booking.care_payment.payment_date if hasattr(booking, 'care_payment') else booking.created_at
+        })
+    except CareBooking.DoesNotExist:
+        messages.error(request, "Booking not found")
+        return redirect('owner_dashboard')
+
+def about(request):
+    return render(request, 'about.html')
+
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message_body = request.POST.get('message')
+        
+        ContactMessage.objects.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message_body
+        )
+        messages.success(request, "Your message has been sent successfully! We will get back to you soon.")
+        return redirect('contact')
+        
+    return render(request, 'contact.html')
+
+@role_required('admin')
+def admin_messages(request):
+    contact_messages = ContactMessage.objects.all().order_by('-created_at')
+    return render(request, 'admin_messages.html', {'contact_messages': contact_messages})

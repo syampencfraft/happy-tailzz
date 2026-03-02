@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-primary"><i class="fas fa-calendar-check me-2"></i>My Appointments</h2>
+            <p class="text-muted">Manage your patient bookings and record treatments.</p>
+        </div>
+        <div class="stats-mini d-flex gap-3">
+            <div class="bg-white p-3 rounded-4 shadow-sm border border-light">
+                <small class="text-muted d-block">Today's Visits</small>
+                <span class="fw-bold fs-4">{{ appointments.count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for apt in appointments %}
+        <div class="col-12">
+            <div class="auth-card p-4 transition-hover h-100" style="max-width: 100%;">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center mb-3 mb-md-0">
+                            <div class="bg-primary-light p-3 rounded-4 me-3 text-primary">
+                                <i class="fas fa-paw fa-2x"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0">{{ apt.pet.name }}</h5>
+                                <p class="text-muted small mb-0">{{ apt.pet.pet_type|title }} • {{ apt.pet.breed }}</p>
+                                <span
+                                    class="badge {% if apt.status == 'pending' %}bg-warning{% elif apt.status == 'confirmed' %}bg-info{% elif apt.status == 'paid' %}bg-primary{% elif apt.status == 'treated' %}bg-success{% else %}bg-danger{% endif %} rounded-pill px-3 mt-2">
+                                    {{ apt.status|title }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="border-start ps-4">
+                            <p class="mb-1"><strong><i
+                                        class="fas fa-clock me-2 text-primary opacity-50"></i>Time:</strong> {{
+                                apt.appointment_date }} at {{ apt.appointment_time }}</p>
+                            <p class="mb-0"><strong><i
+                                        class="fas fa-info-circle me-2 text-primary opacity-50"></i>Reason:</strong> {{
+                                apt.reason }}</p>
+                            {% if apt.amount %}
+                            <p class="mb-0 mt-2 text-success fw-bold">₹ {{ apt.amount }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 text-md-end">
+                        {% if apt.status == 'pending' %}
+                        <form method="post" action="{% url 'update_appointment_status' apt.id %}"
+                            class="d-inline-block">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="confirmed">
+                            <div class="input-group input-group-sm mb-2" style="max-width: 150px; margin-left: auto;">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" name="amount" class="form-control" placeholder="Fee" required>
+                            </div>
+                            <button type="submit" class="btn btn-success rounded-pill px-4 btn-sm fw-bold">Confirm & Set
+                                Fee</button>
+                        </form>
+                        <form method="post" action="{% url 'update_appointment_status' apt.id %}"
+                            class="d-inline-block ms-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="cancelled">
+                            <button type="submit"
+                                class="btn btn-outline-danger btn-sm rounded-pill px-3">Cancel</button>
+                        </form>
+                        {% endif %}
+
+                        {% if apt.status == 'paid' %}
+                        <button type="button" class="btn btn-primary rounded-pill px-4 btn-sm fw-bold"
+                            data-bs-toggle="modal" data-bs-target="#treatModal{{ apt.id }}">
+                            Treat Patient <i class="fas fa-stethoscope ms-1"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if apt.status == 'treated' %}
+                        <div class="text-success small fw-bold">
+                            <i class="fas fa-check-double me-1"></i> Completed
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treatment Modal -->
+            {% if apt.status == 'paid' %}
+            <div class="modal fade" id="treatModal{{ apt.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-5 border-0 shadow-lg">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title fw-bold">Record Treatment for {{ apt.pet.name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form method="post" action="{% url 'update_appointment_status' apt.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="treated">
+                            <div class="modal-body py-4">
+                                <label class="form-label fw-bold">Treatment Summary & Instructions</label>
+                                <div class="input-group-modern">
+                                    <i class="fas fa-notes-medical" style="top: 2rem;"></i>
+                                    <textarea class="form-control" name="treatment_summary"
+                                        placeholder="Provide diagnosis, prescribed meds, or follow-up steps..."
+                                        style="height: 150px; padding-top: 1rem;" required></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 pt-0 pb-4">
+                                <button type="button" class="btn btn-light rounded-pill px-4"
+                                    data-bs-dismiss="modal">Discard</button>
+                                <button type="submit" class="btn btn-primary rounded-pill px-5">Submit Summary <i
+                                        class="fas fa-check-circle ms-1"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-primary-light display-4 p-4 d-inline-block rounded-circle mb-4 text-primary">
+                <i class="fas fa-calendar-times"></i>
+            </div>
+            <h4 class="fw-bold">No Appointments Yet</h4>
+            <p class="text-muted">You'll see your patient bookings here once pet owners schedule visits.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

@@ -2,93 +2,144 @@
 {% block content %}
 
 <div class="auth-wrapper">
-    <div class="auth-container" style="max-width: 700px;">
-        <h3>Create Account</h3>
+    <div class="auth-card" style="max-width: 600px;">
+        <div class="auth-header text-center mb-4">
+            <h2 class="display-6">Create Account</h2>
+            <p>Join our premium pet care community</p>
+        </div>
+
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <div class="row">
+            <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <input class="form-control" type="text" name="full_name" placeholder="Full Name" required>
+                    <div class="input-group-modern">
+                        <i class="fas fa-user"></i>
+                        <input class="form-control" type="text" name="full_name" placeholder="Full Name" required>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <input class="form-control" type="text" name="phone" placeholder="Phone Number" required>
+                    <div class="input-group-modern">
+                        <i class="fas fa-phone"></i>
+                        <input class="form-control" type="text" name="phone" placeholder="Phone Number" required>
+                    </div>
                 </div>
             </div>
 
-            <input class="form-control" type="email" name="email" placeholder="Email Address" required>
-            <textarea class="form-control" name="address" placeholder="Full Address" rows="2" required></textarea>
+            <div class="input-group-modern mb-3">
+                <i class="fas fa-envelope"></i>
+                <input class="form-control" type="email" name="email" placeholder="Email Address" required>
+            </div>
 
-            <select class="form-control" name="role" id="role" required>
-                <option value="" disabled selected>Select Your Role</option>
-                <option value="owner">Pet Owner</option>
-                <option value="vet">Veterinarian</option>
-                <option value="caretaker">Pet Caretaker</option>
-            </select>
+            <div class="input-group-modern mb-3">
+                <i class="fas fa-map-marker-alt"></i>
+                <textarea class="form-control" name="address" placeholder="Full Address" rows="2"
+                    style="height: auto; padding-top: 1rem;" required></textarea>
+            </div>
+
+            <div class="input-group-modern mb-3">
+                <i class="fas fa-user-tag"></i>
+                <select class="form-control" name="role" id="role" required>
+                    <option value="" disabled selected>Select Your Role</option>
+                    <option value="owner">Pet Owner</option>
+                    <option value="vet">Veterinarian</option>
+                    <option value="caretaker">Pet Caretaker</option>
+                </select>
+            </div>
 
             <!-- Vet Fields -->
-            <div id="vet_fields" style="display:none; animation: fadeInUp 0.5s;">
-                <input class="form-control" type="text" name="qualification" placeholder="Qualification">
-                <input class="form-control" type="text" name="registration_number" placeholder="Registration Number">
+            <div id="vet_fields" style="display:none;">
+                <div class="input-group-modern mb-3">
+                    <i class="fas fa-graduation-cap"></i>
+                    <input class="form-control" type="text" name="qualification" placeholder="Qualification">
+                </div>
+                <div class="input-group-modern mb-3">
+                    <i class="fas fa-id-card"></i>
+                    <input class="form-control" type="text" name="registration_number"
+                        placeholder="Registration Number">
+                </div>
             </div>
 
             <!-- Caretaker Fields -->
-            <div id="service_fields" style="display:none; animation: fadeInUp 0.5s;">
-                <input class="form-control" type="number" name="experience" placeholder="Experience (years)">
-                <textarea class="form-control" name="services_offered" placeholder="Services Offered"
-                    rows="2"></textarea>
+            <div id="service_fields" style="display:none;">
+                <div class="input-group-modern mb-3">
+                    <i class="fas fa-briefcase"></i>
+                    <input class="form-control" type="number" name="experience" placeholder="Experience (years)">
+                </div>
+                <div class="input-group-modern mb-3">
+                    <i class="fas fa-concierge-bell"></i>
+                    <textarea class="form-control" name="services_offered" placeholder="Services Offered" rows="2"
+                        style="height: auto; padding-top: 1rem;"></textarea>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label class="text-white small mb-1">Profile Image</label>
-                <input class="form-control" type="file" name="profile_image" required>
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-muted text-uppercase mb-2 ms-1">Profile Image</label>
+                <div class="input-group-modern">
+                    <i class="fas fa-image"></i>
+                    <input class="form-control" type="file" name="profile_image" required style="padding-top: 0.85rem;">
+                </div>
             </div>
 
-            <div class="row">
+            <div class="row g-3 mb-2">
                 <div class="col-md-6">
-                    <div class="input-group">
+                    <div class="input-group-modern">
+                        <i class="fas fa-lock"></i>
                         <input class="form-control" type="password" name="password" id="password" placeholder="Password"
                             required>
-                        <button class="btn btn-outline-light bg-white text-dark" type="button"
-                            onclick="togglePassword('password', this)">
+                        <button class="password-toggle" type="button" onclick="togglePassword('password', this)">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="input-group">
+                    <div class="input-group-modern">
+                        <i class="fas fa-lock"></i>
                         <input class="form-control" type="password" name="confirm_password" id="confirm_password"
-                            placeholder="Confirm Password" required>
-                        <button class="btn btn-outline-light bg-white text-dark" type="button"
+                            placeholder="Confirm" required>
+                        <button class="password-toggle" type="button"
                             onclick="togglePassword('confirm_password', this)">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
             </div>
-            <div id="password-error" class="text-danger small mb-2" style="display:none;"></div>
 
-            <button class="btn btn-primary mt-2" type="submit" id="submitBtn">Create Account</button>
-            <div class="text-center mt-3">
-                <span style="color: rgba(255,255,255,0.7);">Already have an account?</span>
-                <a href="{% url 'login' %}" class="btn-link">Login here</a>
+            <div id="password-error" class="alert alert-danger border-0 small py-2 d-none animate-up"></div>
+
+            <button class="btn btn-primary w-100 py-3 rounded-pill shadow-lg mt-3 mb-4" type="submit" id="submitBtn">
+                Create Account <i class="fas fa-user-plus ms-2"></i>
+            </button>
+
+            <div class="text-center">
+                <span class="text-muted">Already have an account?</span>
+                <a href="{% url 'login' %}" class="fw-bold text-primary text-decoration-none ms-2">Login here</a>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Role selection logic
+    // Role selection logic with smoother animation
     document.getElementById('role').addEventListener('change', function () {
-        document.getElementById('vet_fields').style.display =
-            this.value === 'vet' ? 'block' : 'none';
+        const vetFields = document.getElementById('vet_fields');
+        const serviceFields = document.getElementById('service_fields');
 
-        document.getElementById('service_fields').style.display =
-            (this.value === 'caretaker') ? 'block' : 'none';
+        vetFields.classList.remove('animate-up');
+        serviceFields.classList.remove('animate-up');
 
-        // Reset animations
-        if (this.value === 'vet') document.getElementById('vet_fields').style.animation = 'fadeInUp 0.5s';
-        if (this.value === 'caretaker') document.getElementById('service_fields').style.animation = 'fadeInUp 0.5s';
+        if (this.value === 'vet') {
+            vetFields.style.display = 'block';
+            vetFields.classList.add('animate-up');
+            serviceFields.style.display = 'none';
+        } else if (this.value === 'caretaker') {
+            serviceFields.style.display = 'block';
+            serviceFields.classList.add('animate-up');
+            vetFields.style.display = 'none';
+        } else {
+            vetFields.style.display = 'none';
+            serviceFields.style.display = 'none';
+        }
     });
 
     // Form Validation logic
@@ -123,15 +174,14 @@
         if (!valid) {
             e.preventDefault();
             errorDiv.innerHTML = errors.join('<br>');
-            errorDiv.style.display = 'block';
+            errorDiv.classList.remove('d-none');
 
-            // Add shake animation to container for visual feedback
-            const container = document.querySelector('.auth-container');
-            container.style.animation = 'none';
-            container.offsetHeight; /* trigger reflow */
-            container.style.animation = 'shake 0.5s';
+            const card = document.querySelector('.auth-card');
+            card.style.animation = 'none';
+            card.offsetHeight;
+            card.style.animation = 'shake 0.5s';
         } else {
-            errorDiv.style.display = 'none';
+            errorDiv.classList.add('d-none');
         }
     });
 
@@ -152,50 +202,28 @@
 </script>
 
 <style>
+    .auth-card {
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
     @keyframes shake {
-        0% {
-            transform: translate(1px, 1px) rotate(0deg);
-        }
 
-        10% {
-            transform: translate(-1px, -2px) rotate(-1deg);
-        }
-
-        20% {
-            transform: translate(-3px, 0px) rotate(1deg);
-        }
-
-        30% {
-            transform: translate(3px, 2px) rotate(0deg);
-        }
-
-        40% {
-            transform: translate(1px, -1px) rotate(1deg);
-        }
-
-        50% {
-            transform: translate(-1px, 2px) rotate(-1deg);
-        }
-
-        60% {
-            transform: translate(-3px, 1px) rotate(0deg);
-        }
-
-        70% {
-            transform: translate(3px, 1px) rotate(-1deg);
-        }
-
-        80% {
-            transform: translate(-1px, -1px) rotate(1deg);
-        }
-
-        90% {
-            transform: translate(1px, 2px) rotate(0deg);
-        }
-
+        0%,
         100% {
-            transform: translate(1px, -2px) rotate(-1deg);
+            transform: translateX(0);
         }
+
+        25% {
+            transform: translateX(-10px);
+        }
+
+        75% {
+            transform: translateX(10px);
+        }
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+        display: none;
     }
 </style>
 

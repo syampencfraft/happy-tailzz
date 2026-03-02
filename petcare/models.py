@@ -99,6 +99,7 @@ class Appointment(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
+        ('paid', 'Paid'),
         ('treated', 'Treated'),
         ('cancelled', 'Cancelled'),
     )
@@ -110,7 +111,9 @@ class Appointment(models.Model):
     appointment_time = models.TimeField()
     reason = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     treatment_summary = models.TextField(blank=True, null=True)
+    doctor_note = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -123,8 +126,9 @@ class Payment(models.Model):
         ('failed', 'Failed'),
     )
     METHOD_CHOICES = (
-        ('credit_card', 'Credit Card'),
-        ('paypal', 'PayPal'),
+        ('gpay', 'Google Pay'),
+        ('phonepe', 'PhonePe'),
+        ('card', 'Debit/Credit Card'),
         ('cash', 'Cash'),
     )
 
@@ -152,6 +156,7 @@ class CareBooking(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),
+        ('paid', 'Paid'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     )
@@ -164,6 +169,7 @@ class CareBooking(models.Model):
     reason = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    summary = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -176,8 +182,9 @@ class CarePayment(models.Model):
         ('failed', 'Failed'),
     )
     METHOD_CHOICES = (
-        ('credit_card', 'Credit Card'),
-        ('paypal', 'PayPal'),
+        ('gpay', 'Google Pay'),
+        ('phonepe', 'PhonePe'),
+        ('card', 'Debit/Credit Card'),
         ('cash', 'Cash'),
     )
 
@@ -200,3 +207,13 @@ class CareReview(models.Model):
 
     def __str__(self):
         return f"Review for {self.caretaker.full_name} by {self.owner.full_name}"
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message from {self.name}: {self.subject}"

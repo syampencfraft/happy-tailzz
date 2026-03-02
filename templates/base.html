@@ -9,7 +9,7 @@
 
     <!-- Google Fonts -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <!-- Bootstrap & FontAwesome -->
@@ -17,68 +17,75 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1.3">
 
     {% block extra_css %}{% endblock %}
+    <style>
+        /* Force Navbar Visibility */
+        .navbar .nav-link,
+        .navbar .navbar-brand,
+        .navbar .navbar-brand i {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            opacity: 1 !important;
+        }
+
+        .navbar .navbar-toggler-icon {
+            filter: brightness(0) invert(1) !important;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Professional Navbar -->
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <!-- Premium Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-paw me-2"></i>HAPPY TAILZ
+                <i class="fas fa-paw"></i>HAPPY TAILZ
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+
                     {% if not request.session.user_id or request.session.role == 'owner' %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'discover_pets' %}">Discover Pets</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'predict_breed' %}">Breed Prediction</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'discover_pets' %}">Discover</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'predict_breed' %}">Breed AI</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
                     {% endif %}
 
                     {% if request.session.role == 'caretaker' %}
                     <li class="nav-item">
-                        <a class="nav-link fw-bold text-success" href="{% url 'caretaker_earnings' %}">
-                            <i class="fas fa-wallet me-1"></i> Income Calculation
+                        <a class="nav-link" href="{% url 'caretaker_earnings' %}">
+                            <i class="fas fa-wallet opacity-75 me-1"></i> Earnings
                         </a>
                     </li>
                     {% elif request.session.role == 'vet' %}
                     <li class="nav-item">
-                        <a class="nav-link fw-bold text-success" href="{% url 'vet_income' %}">
-                            <i class="fas fa-wallet me-1"></i> Income Calculation
+                        <a class="nav-link" href="{% url 'vet_income' %}">
+                            <i class="fas fa-wallet opacity-75 me-1"></i> Earnings
                         </a>
                     </li>
                     {% endif %}
 
                     {% if request.session.user_id %}
                     <li class="nav-item">
-                        <a class="nav-link fw-bold text-primary" href="{% url request.session.role|add:'_dashboard' %}">
-                            <i class="fas fa-th-large me-1"></i> Dashboard
+                        <a class="nav-link" href="{% url request.session.role|add:'_dashboard' %}">
+                            <i class="fas fa-grid-2 me-1"></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <span class="nav-link fw-bold text-dark">Welcome, {{ request.session.name }}</span>
-                    </li>
                     <li class="nav-item ms-lg-3">
-                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm">Logout</a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
                     </li>
                     {% else %}
-                    <li class="nav-item ms-lg-3">
-                        <a href="{% url 'login' %}" class="nav-link">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{% url 'register' %}" class="btn btn-primary btn-sm text-white">Join Us</a>
+                    <li class="nav-item ms-lg-2"><a href="{% url 'login' %}" class="nav-link">Login</a></li>
+                    <li class="nav-item ms-lg-2">
+                        <a href="{% url 'register' %}" class="btn btn-primary btn-sm rounded-pill px-4">Join Us</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -87,66 +94,78 @@
     </nav>
 
     <!-- Message Alerts -->
-    <div class="container mt-3">
+    <div class="container mt-4">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
-            {{ message }}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show border-0 shadow-sm animate-up"
+            role="alert" style="border-radius: var(--radius-md);">
+            <div class="d-flex align-items-center">
+                {% if message.tags == 'success' %}
+                <i class="fas fa-check-circle me-3 fs-4 text-success"></i>
+                {% elif message.tags == 'error' %}
+                <i class="fas fa-exclamation-circle me-3 fs-4 text-danger"></i>
+                {% else %}
+                <i class="fas fa-info-circle me-3 fs-4 text-primary"></i>
+                {% endif %}
+                <div>{{ message }}</div>
+            </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         {% endfor %}
     </div>
 
     <!-- Main Content -->
-    <main>
+    <main class="min-vh-100">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Professional Footer -->
-    <footer class="mt-5">
+    <footer>
         <div class="container">
-            <div class="row g-4">
+            <div class="row g-5">
                 <div class="col-lg-4">
-                    <h5 class="navbar-brand text-white mb-3"><i class="fas fa-paw me-2"></i>HAPPY TAILZ</h5>
-                    <p class="text-white-50">Providing world-class care for your furry best friends. From grooming to
-                        veterinary care, we treat every pet like family.</p>
+                    <h5 class="navbar-brand text-white mb-4"><i class="fas fa-paw me-2"></i>HAPPY TAILZ</h5>
+                    <p class="text-white-50 lh-lg">Providing world-class care for your furry best friends. From grooming
+                        to expert veterinary care, we treat every pet like family.</p>
                     <div class="d-flex gap-3 mt-4">
-                        <a href="#" class="text-white"><i class="fab fa-facebook fa-xl"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-instagram fa-xl"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-twitter fa-xl"></i></a>
+                        <a href="#" class="text-white opacity-50"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white opacity-50"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white opacity-50"><i class="fab fa-x-twitter"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-2 ms-lg-auto">
-                    <h5>Quick Links</h5>
+                <div class="col-6 col-lg-2 ms-lg-auto">
+                    <h6 class="fw-bold text-white mb-4">Quick Links</h6>
                     <a href="/" class="footer-link">Home</a>
-                    <a href="#" class="footer-link">About Us</a>
-                    <a href="#" class="footer-link">Services</a>
-                    <a href="#" class="footer-link">Contact</a>
+                    <a href="{% url 'about' %}" class="footer-link">About Us</a>
+                    <a href="{% url 'contact' %}" class="footer-link">Contact</a>
                 </div>
-                <div class="col-lg-2">
-                    <h5>Services</h5>
-                    <a href="#" class="footer-link">Pet Grooming</a>
-                    <a href="#" class="footer-link">Vet Consultation</a>
-                    <a href="#" class="footer-link">Pet Training</a>
-                    <a href="#" class="footer-link">Pet Adoption</a>
+                <div class="col-6 col-lg-2">
+                    <h6 class="fw-bold text-white mb-4">Support</h6>
+                    <a href="#" class="footer-link">Help Center</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Use</a>
+                    <a href="#" class="footer-link">FAQs</a>
                 </div>
                 <div class="col-lg-3">
-                    <h5>Newsletter</h5>
-                    <p class="small text-white-50">Stay updated with pet care tips and our latest news.</p>
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control bg-dark border-secondary text-white"
-                            placeholder="Email Address">
-                        <button class="btn btn-primary" type="button">Subscribe</button>
+                    <h6 class="fw-bold text-white mb-4">Stay Connected</h6>
+                    <p class="small text-white-50 mb-4">Join our community for pet care tips and updates.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control bg-dark border-0 text-white shadow-none ps-3"
+                            placeholder="Email Address" style="border-radius: var(--radius-sm) 0 0 var(--radius-sm);">
+                        <button class="btn btn-primary" type="button"
+                            style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <hr class="mt-5 mb-4 border-secondary">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <p class="small mb-0 text-white-50">&copy; 2026 Happy Tailz. All rights reserved.</p>
+            <hr class="my-5 border-secondary opacity-25">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="small text-white-50 mb-0">&copy; 2026 Happy Tailz. Built with <i
+                            class="fas fa-heart text-danger mx-1"></i> for pets.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="small mb-0 text-white-50">Designed with <i class="fas fa-heart text-danger"></i> for pets.
-                    </p>
+                <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                    <p class="small text-white-50 mb-0">Premium Pet Care Marketplace</p>
                 </div>
             </div>
         </div>
@@ -154,6 +173,17 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar shadow and color on scroll
+        window.addEventListener('scroll', function () {
+            const nav = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 
